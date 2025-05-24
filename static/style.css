@@ -1,0 +1,283 @@
+/* static/style.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 400px;
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
+    flex-shrink: 0;
+    transform: translateX(0);
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+    margin-bottom: 30px; /* New Task başlığı ile ilk input arasında boşluk */
+}
+
+.sidebar form {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar form label {
+    margin-bottom: 5px;
+    color: #eee;
+    font-weight: bold;
+}
+
+.sidebar form input,
+.sidebar form textarea,
+.sidebar form button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000; /* Kenarlık siyah yapıldı */
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333; /* Input ve textarea içindeki yazı rengi */
+}
+
+.sidebar form input {
+    margin-bottom: 25px; /* Task Title ile Task Description arasındaki boşluk artırıldı */
+}
+
+.sidebar form textarea {
+    height: 180px; /* Textarea yüksekliği daha da artırıldı */
+    resize: vertical;
+    margin-bottom: 15px; /* Textarea ile Add butonu arasındaki boşluk */
+}
+
+.sidebar form button {
+    background-color: #5cb85c;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border: none; /* Butonun kenarlığı olmasın */
+}
+
+.sidebar form button:hover {
+    background-color: #4cae4c;
+}
+
+/* Sidebar kapalı hali */
+.sidebar.closed {
+    transform: translateX(-100%);
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Toggle Button */
+.toggle-btn {
+    position: fixed;
+    top: 10px;
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 100;
+    transition: left 0.3s ease, border-radius 0.3s ease;
+    left: 410px;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Sidebar kapalıyken butonun konumu ve stilini ayarla */
+.sidebar.closed ~ .toggle-btn {
+    left: 10px;
+    border-radius: 4px;
+}
+
+/* Main Content Area */
+.main {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    overflow-y: auto;
+}
+
+header {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.board {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: nowrap;
+    min-width: 900px;
+}
+
+.column {
+    flex: 1;
+    min-width: 280px;
+    background: #e2e2e2;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.column h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 22px;
+}
+
+.task-list {
+    flex-grow: 1;
+}
+
+.task {
+    background: #fff;
+    border: 1px solid #000; /* Kenarlık siyah yapıldı */
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; /* opacity için transition eklendi */
+}
+
+.task:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task.dragging { /* Sürüklenen öğe için YENİ stil */
+    opacity: 0.5; /* Öğeyi biraz saydamlaştırır, "taşınıyor" hissi verir */
+    /* İsteğe bağlı: Hafif bir gölge veya ölçeklendirme ekleyebilirsiniz */
+    /* box-shadow: 0 6px 12px rgba(0,0,0,0.2); */
+    /* transform: scale(1.03); */
+
+    /* Mavi kesikli kenarlık ve arka planı kaldırıyoruz: */
+    /* border: 2px dashed #007bff; Artık bu yok */
+    /* background-color: #e0f2ff; Artık bu yok */
+}
+
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 99;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    display: none;
+    z-index: 101;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 28px;
+    color: #777;
+    transition: color 0.2s ease;
+}
+
+.modal .close:hover {
+    color: #333;
+}
+
+.modal h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #333;
+}
+
+.modal p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Responsive Tasarım (Basic) */
+@media (max-width: 768px) {
+    .board {
+        flex-direction: column;
+        align-items: center;
+        min-width: unset;
+    }
+
+    .column {
+        width: 90%;
+        max-width: 400px;
+        margin-bottom: 20px;
+        min-height: 200px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        height: auto;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        padding: 15px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0 !important;
+        padding-top: 60px;
+    }
+
+    .toggle-btn {
+        top: 5px;
+        left: 5px;
+        border-radius: 4px;
+        z-index: 102;
+    }
+
+    .sidebar.open ~ .toggle-btn {
+        left: calc(100% - 60px);
+    }
+}
