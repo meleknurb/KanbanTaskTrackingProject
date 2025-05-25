@@ -9,10 +9,10 @@
 <body>
   <div class="sidebar open" id="sidebar">
     <h2>New Task</h2> <form action="{{ url_for('add_task') }}" method="POST">
-      <label for="taskTitle">Task Title</label>
+      <label for="taskTitle">Task Title:</label>
       <input type="text" id="taskTitle" name="title" required />
       
-      <label for="taskDescription">Task Description (optional)</label>
+      <label for="taskDescription">Task Description (optional):</label>
       <textarea id="taskDescription" name="description"></textarea>
       
       <input type="hidden" name="column" value="todo" />
@@ -23,7 +23,12 @@
   <button class="toggle-btn" id="toggleBtn">❮</button>
 
   <div class="main shrink">
-    <header>Drag and Drop Project</header>
+    <header class="project-tasks-header">
+        Project Tasks
+    </header>
+    <p class="project-tasks-description">
+        Keep track of your progress by dragging each task from "To Do" to "In Progress" to "Done" as you work on them. You can also click on a task to see more information about it.
+    </p>
     <div class="board">
       {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
         <div class="column" id="{{ column }}">
