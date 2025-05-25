@@ -3,28 +3,56 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #20272c;;
     display: flex;
     height: 100vh;
     overflow: hidden;
 }
 
+.project-tasks-header {
+    font-size: 35px;
+    text-align: center;
+    margin-bottom: 10px; /* Açıklama ile arayı açmak için azaltıldı */
+    color: #e0e6eb; /* Codecademy'nin mavi vurgu rengi */
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding-top: 20px; /* Üstten biraz boşluk verelim */
+}
+
+.project-tasks-description {
+    text-align: center;
+    color: #e0e6eb; /* Açıklama metni için hafif gri ton */
+    font-size: 17px;
+    line-height: 1.5; /* Satır aralığı */
+    margin-bottom: 40px; /* Sütunlarla arasında boşluk */
+    max-width: 800px; /* Genişliği sınırlayalım */
+    margin-left: auto; /* Ortalamak için */
+    margin-right: auto; /* Ortalamak için */
+}
+
 /* Sidebar */
+
 .sidebar {
-    width: 400px;
-    background: #333;
-    color: #fff;
+    width: 400px; /* Biraz daha daraltıldı */
+    background-color: #e2e2e2; /* Koyu gri/mavi ton */
+    color: #333; /* Açık gri metin */
     padding: 20px;
     box-sizing: border-box;
     transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
     flex-shrink: 0;
-    transform: translateX(0);
+    transform: translateX(0); /* Bu satır orijinal haliyle kalsın */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Daha belirgin gölge */
+    border-right: 1px solid #e0e0e0;
 }
 
 .sidebar h2 {
     margin-top: 0;
-    font-size: 20px;
-    margin-bottom: 30px; /* New Task başlığı ile ilk input arasında boşluk */
+    font-size: 24px; /* Daha büyük başlık */
+    margin-bottom: 35px; /* Alt boşluk artırıldı */
+    color: #333; /* Beyaz başlık rengi */
+    text-align: center; /* Ortala */
+    border-bottom: 1px solid #000000e9; /* Alt çizgi */
+    padding-bottom: 15px; /* Çizgiye boşluk */
 }
 
 .sidebar form {
@@ -33,34 +61,39 @@ body {
 }
 
 .sidebar form label {
-    margin-bottom: 5px;
-    color: #eee;
+    margin-bottom: 8px; /* Boşluk artırıldı */
+    color: #333333; /* Daha açık mavi-gri ton */
     font-weight: bold;
+    display: block; /* Her etiket ayrı satırda */
+    font-size: 16px;
 }
 
 .sidebar form input,
 .sidebar form textarea,
-.sidebar form button {
+.sidebar form button { /* <-- button da buradaydı */
     width: 100%;
     padding: 10px;
-    border: 1px solid #000; /* Kenarlık siyah yapıldı */
+    border: 2px solid #000000; /* Kenarlık siyah yapıldı */
     border-radius: 4px;
     box-sizing: border-box;
     color: #333; /* Input ve textarea içindeki yazı rengi */
+    font-weight: 530;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
 }
 
 .sidebar form input {
-    margin-bottom: 25px; /* Task Title ile Task Description arasındaki boşluk artırıldı */
+    margin-bottom: 45px; /* Task Title ile Task Description arasındaki boşluk artırıldı */
 }
 
 .sidebar form textarea {
-    height: 180px; /* Textarea yüksekliği daha da artırıldı */
+    height: 250px; /* Textarea yüksekliği daha da artırıldı */
     resize: vertical;
-    margin-bottom: 15px; /* Textarea ile Add butonu arasındaki boşluk */
+    margin-bottom: 20px; /* Textarea ile Add butonu arasındaki boşluk */
 }
 
 .sidebar form button {
-    background-color: #5cb85c;
+    background-color: #054882;
     color: white;
     cursor: pointer;
     font-weight: bold;
@@ -68,7 +101,7 @@ body {
 }
 
 .sidebar form button:hover {
-    background-color: #4cae4c;
+    background-color: #054882;
 }
 
 /* Sidebar kapalı hali */
@@ -83,7 +116,7 @@ body {
 .toggle-btn {
     position: fixed;
     top: 10px;
-    background: #333;
+    background: #36404a;
     color: #fff;
     border: none;
     padding: 10px 15px;
@@ -98,6 +131,7 @@ body {
 .sidebar.closed ~ .toggle-btn {
     left: 10px;
     border-radius: 4px;
+    background-color: #36404a;
 }
 
 /* Main Content Area */
@@ -106,6 +140,7 @@ body {
     padding: 20px;
     transition: margin-left 0.3s ease;
     overflow-y: auto;
+    background-color: #20272c;
 }
 
 header {
@@ -129,38 +164,43 @@ header {
     background: #e2e2e2;
     padding: 15px;
     border-radius: 8px;
-    min-height: 400px;
+    min-height: 1px;
     display: flex;
     flex-direction: column;
 }
 
 .column h3 {
-    text-align: center;
+    text-align: left;
     margin-top: 0;
-    margin-bottom: 15px;
-    color: #555;
-    font-size: 22px;
+    margin-bottom: 15px; /* Başlık ile görev kutusu arasındaki boşluk için orijinal değeri koruyoruz */
+    color: #333;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-bottom: 2px; /* Sütun başlığının altına ek boşluk ekledik */
 }
 
 .task-list {
     flex-grow: 1;
+    padding-top: 8px; /* Görev kutularının sütun başlığından biraz daha altta başlaması için eklendi */
 }
 
 .task {
     background: #fff;
     border: 1px solid #000; /* Kenarlık siyah yapıldı */
-    margin-bottom: 10px;
+    margin-bottom: 11px; /* Görev kutuları arasındaki boşluğu artırmak için artırıldı (8px'den 15px'e) */
     padding: 12px;
     border-radius: 6px;
     cursor: grab;
     user-select: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; /* opacity için transition eklendi */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease; /* Yeni geçişler ekleyelim */
 }
 
 .task:hover {
-    background: #f8f8f8;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: #f0f0f0; /* Hafif daha açık gri bir arka plan */
+    border-color: 2px solid #000; /* Mavi bir kenarlık vurgusu */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Daha belirgin gölge */
+    transform: translateY(-2px); /* Kartı hafifçe yukarı kaldır */
 }
 
 .task.dragging { /* Sürüklenen öğe için YENİ stil */
@@ -225,7 +265,7 @@ header {
 }
 
 .modal p {
-    color: #666;
+    color: #333333;
     line-height: 1.6;
 }
 
@@ -247,7 +287,8 @@ header {
         width: 90%;
         max-width: 400px;
         margin-bottom: 20px;
-        min-height: 200px;
+        min-height: 100px;
+        padding-bottom: 1px;
     }
 
     .sidebar {
