@@ -1,65 +1,48 @@
 document.addEventListener("DOMContentLoaded", () => {
     let draggedElement = null;
     let originalColumn = null;
+    let editorInstance = null; // CKEditor instance'ını tutmak için
+
+    ClassicEditor
+        .create(document.querySelector('#taskDescription')) // #taskDescription textarea'sına bağlı olduğunu varsayalım
+        .then(editor => {
+             editorInstance = editor;
+         })
+         .catch(error => {
+             console.error(error);
+         });
 
     function adjustColumnHeight(columnElement) {
         if (!columnElement) return;
 
         const taskList = columnElement.querySelector(".task-list");
         const tasks = Array.from(taskList.querySelectorAll(".task"));
+        columnElement.style.height = "auto";
+        const minHeight = 100;
 
-        // CSS tarafından otomatik yüksekliğe bırakmak için height stilini kaldırın
-        // Bu, tarayıcının doğal yüksekliği hesaplamasına izin verir.
-        columnElement.style.height = "auto"; 
-
-        // Sütunun başlığı ve paddingleri için minimum bir yükseklik belirleyelim.
-        // Kullanıcının isteği üzerine bu değeri 100 olarak tutuyoruz.
-        const minHeightForColumnContent = 100; 
-
-        let totalTasksHeight = 0;
+        let totalHeight = 0;
         tasks.forEach(task => {
-            // Her görevin kendi yüksekliğini ve altındaki margin'ini hesapla
-            const taskComputedStyle = window.getComputedStyle(task);
-            const taskMarginBottom = parseFloat(taskComputedStyle.marginBottom) || 0;
-            totalTasksHeight += task.offsetHeight + taskMarginBottom;
+            const style = window.getComputedStyle(task);
+            totalHeight += task.offsetHeight + (parseFloat(style.marginBottom) || 0);
         });
 
-        const columnTitleElement = columnElement.querySelector("h3");
-        const columnTitleHeight = columnTitleElement ? columnTitleElement.offsetHeight : 0;
-
-        const columnStyle = window.getComputedStyle(columnElement);
-        const columnPaddingTop = parseFloat(columnStyle.paddingTop) || 0;
-        const columnPaddingBottom = parseFloat(columnStyle.paddingBottom) || 0;
+        const titleHeight = columnElement.querySelector("h3")?.offsetHeight || 0;
+        const colStyle = window.getComputedStyle(columnElement);
+        const colPaddingTop = parseFloat(colStyle.paddingTop) || 0;
+        const colPaddingBottom = parseFloat(colStyle.paddingBottom) || 0;
 
         const taskListStyle = window.getComputedStyle(taskList);
-        const taskListPaddingTop = parseFloat(taskListStyle.paddingTop) || 0;
-        const taskListPaddingBottom = parseFloat(taskListStyle.paddingBottom) || 0;
-        
-        // Toplam yükseklik hesaplaması
-        // Görevlerin toplam yüksekliği + sütun başlığı + sütun paddingleri + task list paddingleri
-        let desiredHeight = columnTitleHeight + columnPaddingTop + columnPaddingBottom + 
-                            taskListPaddingTop + taskListPaddingBottom + totalTasksHeight;
+        const tlPaddingTop = parseFloat(taskListStyle.paddingTop) || 0;
+        const tlPaddingBottom = parseFloat(taskListStyle.paddingBottom) || 0;
 
-        // Eğer hiç görev yoksa, minimum yüksekliği kullan.
-        if (tasks.length === 0) {
-            desiredHeight = Math.max(desiredHeight, minHeightForColumnContent);
-        } else {
-            // Görev varsa, alt boşluğu azaltmak için küçük bir miktar çıkar.
-            // Bu değeri (örneğin 10 veya 15) deneyerek en uygun sonucu bulabilirsiniz.
-            // 15px, task'ın margin-bottom'ı (8px) ve column'ın padding-bottom'ı (15px) toplamı olan 23px'i azaltmaya yardımcı olur.
-            desiredHeight -= 16; // Boşluğu azaltmak için 15 piksel çıkarıldı
-            // Yine de minimum yüksekliğin altına düşmediğinden emin ol.
-            desiredHeight = Math.max(desiredHeight, minHeightForColumnContent); 
-        }
+        let height = titleHeight + colPaddingTop + colPaddingBottom + tlPaddingTop + tlPaddingBottom + totalHeight;
+        height = tasks.length === 0 ? Math.max(height, minHeight) : Math.max(height - 16, minHeight);
 
-        // Yüksekliği ayarla.
-        columnElement.style.height = `${desiredHeight}px`; 
+        columnElement.style.height = `${height}px`;
     }
 
     function adjustAllColumnHeights() {
-        document.querySelectorAll(".column").forEach(column => {
-            adjustColumnHeight(column);
-        });
+        document.querySelectorAll(".column").forEach(adjustColumnHeight);
     }
 
     function enableTaskEvents(task) {
@@ -69,72 +52,52 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.effectAllowed = "move";
             task.classList.add("dragging");
 
-            // Orijinal kodunuzdaki gibi, sürükleme başladığında orijinal sütunun yüksekliğini ayarla.
-            // Bu, sürüklenen öğe hala DOM'da olsa bile, orijinal sütunun görünümünü günceller.
             setTimeout(() => {
-                if (originalColumn) {
-                    adjustColumnHeight(originalColumn);
-                }
+                if (originalColumn) adjustColumnHeight(originalColumn);
             }, 0);
         });
 
         task.addEventListener("dragend", () => {
-            if (draggedElement) {
-                draggedElement.classList.remove("dragging");
-            }
-            // Sürükleme bittiğinde tüm sütunların yüksekliğini tekrar düzenle
-            // Bu, öğe yeni yerine yerleştirildikten sonra tüm sütunların doğru yüksekliğe sahip olmasını sağlar.
-            adjustAllColumnHeights(); 
-            draggedElement = null; // draggedElement'i sıfırla
-            originalColumn = null; // originalColumn'ı sıfırla
+            if (draggedElement) draggedElement.classList.remove("dragging");
+            adjustAllColumnHeights();
+            draggedElement = null;
+            originalColumn = null;
         });
 
         task.addEventListener("click", () => {
-            // Eğer sürükleme işlemi devam ediyorsa modalı açma
-            if (draggedElement && draggedElement.classList.contains("dragging")) return;
+            if (draggedElement?.classList.contains("dragging")) return;
 
-            const title = task.querySelector(".task-title").textContent;
+            const title = task.querySelector(".task-title")?.textContent || "";
             const desc = task.getAttribute("data-description");
             document.getElementById("modalTitle").textContent = title;
-            document.getElementById("modalDesc").textContent = desc || "No description provided.";
+            document.getElementById("modalDesc").innerHTML = desc || "<i>No description provided.</i>";
             document.getElementById("modalOverlay").style.display = "block";
             document.getElementById("taskModal").style.display = "block";
         });
     }
 
-    // Mevcut tüm görevlere olay dinleyicilerini ekle
-    document.querySelectorAll(".task").forEach(task => {
-        enableTaskEvents(task);
-    });
+    document.querySelectorAll(".task").forEach(enableTaskEvents);
 
     document.querySelectorAll(".column").forEach(column => {
         column.addEventListener("dragover", e => {
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
-            // Görevlerin arasına yerleştirme mantığını kaldırdık, sadece sürüklemeye izin veriyoruz.
-            // Bu, orijinal kodunuzdaki sürükleme davranışını korur.
         });
 
         column.addEventListener("drop", async e => {
             e.preventDefault();
             if (draggedElement && draggedElement.parentNode) {
                 const targetTaskList = column.querySelector(".task-list");
-                // Orijinal kodunuzdaki gibi, sürüklenen öğeyi hedef listeye ekle
                 targetTaskList.appendChild(draggedElement);
 
-                // Drop sonrası hem hedef hem de orijinal sütunun yüksekliğini ayarla
-                // Orijinal sütun hala mevcutsa onun da yüksekliğini güncelle
                 if (originalColumn) {
-                    // requestAnimationFrame kullanarak DOM güncellemesini tarayıcının sonraki çizim döngüsüne bırak
-                    requestAnimationFrame(() => {
-                        adjustColumnHeight(originalColumn);
-                    });
+                    requestAnimationFrame(() => adjustColumnHeight(originalColumn));
                 }
-                adjustColumnHeight(column); // Hedef sütunun yüksekliğini ayarla
+                adjustColumnHeight(column);
 
                 const taskId = draggedElement.getAttribute("data-id");
                 const newColumnId = column.id;
-                const originalColumnId = originalColumn ? originalColumn.id : null;
+                const originalColumnId = originalColumn?.id || null;
 
                 try {
                     const response = await fetch('/move_task', {
@@ -148,46 +111,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
 
                     if (!response.ok) {
-                        console.error("Failed to move task on backend. Reverting changes.");
-                        // Hata durumunda görevi orijinal sütununa geri taşı
+                        console.error("Backend taşımada hata. Geri alınıyor.");
                         if (originalColumn) {
                             originalColumn.querySelector(".task-list").appendChild(draggedElement);
-                            adjustAllColumnHeights(); // Revert sonrası tüm sütunları ayarla
+                            adjustAllColumnHeights();
                         }
                     }
                 } catch (error) {
-                    console.error("Error sending move request:", error);
-                    // Ağ hatası durumunda görevi orijinal sütununa geri taşı
+                    console.error("Taşıma isteği hatası:", error);
                     if (originalColumn) {
                         originalColumn.querySelector(".task-list").appendChild(draggedElement);
-                        adjustAllColumnHeights(); // Revert sonrası tüm sütunları ayarla
+                        adjustAllColumnHeights();
                     }
-                } finally {
-                    // draggedElement ve originalColumn dragend'de sıfırlanacak.
                 }
             }
         });
     });
 
-    // Sidebar toggle
+    // Sidebar
     const toggleBtn = document.getElementById("toggleBtn");
     const sidebar = document.getElementById("sidebar");
     const main = document.querySelector(".main");
 
     toggleBtn.addEventListener("click", () => {
-        if (sidebar.classList.contains("open")) {
-            sidebar.classList.remove("open");
-            sidebar.classList.add("closed");
-            main.classList.remove("shrink");
-            main.classList.add("expanded");
-            toggleBtn.innerHTML = "❯";
-        } else {
-            sidebar.classList.remove("closed");
-            sidebar.classList.add("open");
-            main.classList.remove("expanded");
-            main.classList.add("shrink");
-            toggleBtn.innerHTML = "❮";
-        }
+        const isOpen = sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", !isOpen);
+        sidebar.classList.toggle("closed", isOpen);
+        main.classList.toggle("shrink", !isOpen);
+        main.classList.toggle("expanded", isOpen);
+        toggleBtn.innerHTML = isOpen ? "❯" : "❮";
     });
 
     function closeModal() {
@@ -198,16 +150,63 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".close").addEventListener("click", closeModal);
     document.getElementById("modalOverlay").addEventListener("click", closeModal);
 
-    // Sayfa yüklendiğinde tüm sütunların yüksekliğini ayarla
+    // Yükseklikleri ayarla
     adjustAllColumnHeights();
 
-    // Yeni görev eklendiğinde yüksekliği güncellemek için formu dinleyebiliriz
-    const addTaskForm = document.querySelector(".sidebar form");
-    if (addTaskForm) {
-        addTaskForm.addEventListener("submit", () => {
-            // Form gönderildiğinde sayfa yenileniyorsa bu satır sadece bilgilendirme amaçlıdır.
-            // AJAX ile ekleme yapıldığında faydalı olacaktır.
-            setTimeout(adjustAllColumnHeights, 100); 
+    // ✅ AJAX Görev Ekleme
+    const taskForm = document.getElementById("taskForm");
+    if (taskForm) {
+        taskForm.addEventListener("submit", async e => {
+            e.preventDefault();
+
+            // CKEditor verisini textarea'ya aktar
+            if (editorInstance) {
+                const description = editorInstance.getData();
+                const descField = document.querySelector("textarea[name='description']");
+                if (descField) descField.value = description;
+            }
+
+            const formData = new FormData(taskForm);
+            const response = await fetch("/add", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                if (result.success) {
+                    // Formu temizle
+                    taskForm.querySelector("#taskTitle").value = '';
+                    if (editorInstance) {
+                        editorInstance.setData(''); // CKEditor içeriğini temizle
+                        // CKEditor'ın bağlı olduğu textarea'yı da temizle
+                        taskForm.querySelector("textarea[name='description']").value = ''; 
+                    }
+
+                    // Yeni görevi oluştur
+                    const todoColumn = document.querySelector("#todo .task-list");
+                    const newTask = document.createElement("div");
+                    newTask.classList.add("task");
+                    newTask.setAttribute("draggable", "true");
+                    newTask.setAttribute("data-id", result.task.id);
+                    newTask.setAttribute("data-description", result.task.desc || "");
+                    newTask.innerHTML = `<div class="task-title">${result.task.title}</div>`;
+
+                    todoColumn.appendChild(newTask);
+                    enableTaskEvents(newTask);
+                    adjustAllColumnHeights();
+                } else {
+                    alert("Görev eklenemedi.");
+                }
+            } else {
+                const errorData = await response.json();
+                console.error("Form hatası:", errorData.errors);
+                alert("Hatalı giriş: " + JSON.stringify(errorData.errors));
+            }
         });
     }
 });

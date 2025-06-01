@@ -1,79 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Drag and Drop Kanban</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Drag and Drop Kanban</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
-  <div class="sidebar open" id="sidebar">
-    <h2>New Task</h2> 
-    <form action="{{ url_for('add_task') }}" method="POST">
-      {{ form.csrf_token }} <div>
-        <label for="taskTitle">{{ form.title.label }}</label>
-        {{ form.title(class="form-control", id="taskTitle", required=True) }}
-        {% if form.title.errors %}
-          <ul class="errors">
-            {% for error in form.title.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
-      
-      <div>
-        <label for="taskDescription">{{ form.description.label }}</label>
-        {{ form.description(class="form-control", id="taskDescription") }}
-        {% if form.description.errors %}
-          <ul class="errors">
-            {% for error in form.description.errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
-      
-      <input type="hidden" name="column" value="todo" />
-      <button type="submit">Add</button>
-    </form>
-  </div>
-
-  <button class="toggle-btn" id="toggleBtn">❮</button>
-
-  <div class="main shrink">
-    <header class="project-tasks-header">
-        Project Tasks
-    </header>
-    <p class="project-tasks-description">
-      Keep track of your progress by dragging each task from "To Do" to "In Progress" to "Done" as you work on them. You can also click on a task to see more information about it.
-    </p>
-    <div class="board">
-      {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
-        <div class="column" id="{{ column }}">
-          <h3>{{ column_title }}</h3>
-          <div class="task-list">
-            {% for task in tasks[column] %}
-              <div class="task" draggable="true" 
-                    data-description="{{ task.desc | e }}" 
-                    data-id="{{ task.id }}">
-                <div class="task-title">{{ task.title }}</div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
+    <div class="sidebar open" id="sidebar">
+        <h2>New Task</h2> 
+        <form id="taskForm" action="{{ url_for('add_task') }}" method="POST">
+            {{ form.csrf_token }} 
+            
+            <div>
+                <label for="taskTitle">{{ form.title.label }}</label>
+                {{ form.title(class="form-control", id="taskTitle", required=True) }}
+                {% if form.title.errors %}
+                    <ul class="errors">
+                        {% for error in form.title.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="ckeditor-container"> 
+                <label for="taskDescription">{{ form.description.label }}</label>
+                {{ form.description(class="form-control", id="taskDescription") }}
+                {% if form.description.errors %}
+                    <ul class="errors">
+                        {% for error in form.description.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <input type="hidden" name="column" value="todo" />
+            <button type="submit">Add</button>
+        </form>
     </div>
-  </div>
 
-  <div class="modal-overlay" id="modalOverlay"></div>
-  <div class="modal" id="taskModal">
-    <div class="close" id="modalClose">&times;</div>
-    <h3 id="modalTitle"></h3>
-    <p id="modalDesc"></p>
-  </div>
+    <button class="toggle-btn" id="toggleBtn">❮</button>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <div class="main shrink">
+        <header class="project-tasks-header">
+            Project Tasks
+        </header>
+        <p class="project-tasks-description">
+            Keep track of your progress by dragging each task from "To Do" to "In Progress" to "Done" as you work on them. You can also click on a task to see more information about it.
+        </p>
+        <div class="board">
+            {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
+                <div class="column" id="{{ column }}">
+                    <h3>{{ column_title }}</h3>
+                    <div class="task-list">
+                        {% for task in tasks[column] %}
+                            <div class="task" draggable="true" 
+                                 data-description="{{ task.desc | e }}" 
+                                 data-id="{{ task.id }}">
+                                <div class="task-title">{{ task.title }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="taskModal">
+        <div class="close" id="modalClose">&times;</div>
+        <h3 id="modalTitle"></h3>
+        <p id="modalDesc"></p>
+    </div>
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>  
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

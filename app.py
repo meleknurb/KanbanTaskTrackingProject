@@ -31,22 +31,26 @@ def index():
 
 @app.route("/add", methods=["POST"])
 def add_task():
-    form = TaskForm(request.form) # POST isteği geldiğinde formu yeniden oluşturuyoruz
+    form = TaskForm(request.form)
 
-    if form.validate(): # Formun geçerli olup olmadığını kontrol et
+    if form.validate():
         title = form.title.data
         description = form.description.data
-        column = "todo" # Görevler varsayılan olarak "To Do" sütununa eklenir
-
-        new_id = get_next_task_id() # Yeni benzersiz ID al
+        new_id = get_next_task_id()
         task = {"id": new_id, "title": title, "desc": description}
-        tasks[column].append(task)
+        tasks["todo"].append(task)
+
+        # AJAX ise JSON döneriz
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"success": True, "task": task})
+
         return redirect(url_for("index"))
     else:
-        # Form doğrulaması başarısız olursa, hataları konsola yazdırabiliriz
-        # veya bunları template'e geri gönderip kullanıcıya gösterebiliriz.
-        print(form.errors)
-        return render_template("index.html", tasks=tasks, form=form) # Hatalarla birlikte formu geri gönder
+        # Hatalar varsa JSON olarak döndür
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"success": False, "errors": form.errors}), 400
+
+        return render_template("index.html", tasks=tasks, form=form)
 
 
 @app.route("/move_task", methods=["POST"])

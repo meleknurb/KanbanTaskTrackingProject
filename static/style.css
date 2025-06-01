@@ -3,93 +3,94 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #20272c;;
+    background-color: #20272c;
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    height: 100vh; /* Ekranın tamamını kapla */
+    overflow: hidden; /* Sayfanın genel kaydırma çubuğunu engeller, ana sayfanın kaymamasını sağlar */
 }
 
 .project-tasks-header {
     font-size: 35px;
     text-align: center;
-    margin-bottom: 10px; /* Açıklama ile arayı açmak için azaltıldı */
-    color: #e0e6eb; /* Codecademy'nin mavi vurgu rengi */
+    margin-bottom: 10px;
+    color: #e0e6eb;
     font-weight: bold;
     letter-spacing: 1px;
-    padding-top: 20px; /* Üstten biraz boşluk verelim */
+    padding-top: 20px;
 }
 
 .project-tasks-description {
     text-align: center;
-    color: #e0e6eb; /* Açıklama metni için hafif gri ton */
+    color: #e0e6eb;
     font-size: 17px;
-    line-height: 1.5; /* Satır aralığı */
-    margin-bottom: 40px; /* Sütunlarla arasında boşluk */
-    max-width: 800px; /* Genişliği sınırlayalım */
-    margin-left: auto; /* Ortalamak için */
-    margin-right: auto; /* Ortalamak için */
+    line-height: 1.5;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Sidebar */
-
 .sidebar {
-    width: 400px; /* Biraz daha daraltıldı */
-    background-color: #e2e2e2; /* Koyu gri/mavi ton */
-    color: #333; /* Açık gri metin */
+    width: 400px;
+    background-color: #e2e2e2;
+    color: #333;
     padding: 20px;
     box-sizing: border-box;
     transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
-    flex-shrink: 0;
-    transform: translateX(0); /* Bu satır orijinal haliyle kalsın */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Daha belirgin gölge */
+    flex-shrink: 0; /* Sidebar'ın küçülmesini engelle */
+    transform: translateX(0);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e0e0e0;
+    
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Sidebar'ın ekran yüksekliği kadar olmasını sağlar */
+    overflow: hidden; /* Sidebar'ın kendisinin taşmasını engeller */
 }
 
 .sidebar h2 {
     margin-top: 0;
-    font-size: 24px; /* Daha büyük başlık */
-    margin-bottom: 35px; /* Alt boşluk artırıldı */
-    color: #333; /* Beyaz başlık rengi */
-    text-align: center; /* Ortala */
-    border-bottom: 1px solid #000000e9; /* Alt çizgi */
-    padding-bottom: 15px; /* Çizgiye boşluk */
+    font-size: 24px;
+    margin-bottom: 35px;
+    color: #333;
+    text-align: center;
+    border-bottom: 1px solid #000000e9;
+    padding-bottom: 15px;
+    flex-shrink: 0; /* Başlığın sabit kalmasını sağlar */
 }
 
 .sidebar form {
     display: flex;
     flex-direction: column;
+    flex-grow: 1; /* Formun sidebar içinde kalan tüm yüksekliği kaplamasını sağlar */
+    overflow-y: auto; /* Formun içeriği taştığında formun kendi içinde kaydırma çubuğu çıkar */
+    padding-bottom: 0; 
+}
+
+.sidebar form > div:not(.ckeditor-container) { /* Başlık inputunu saran div */
+    margin-bottom: 40px; 
+    flex-shrink: 0; 
 }
 
 .sidebar form label {
-    margin-bottom: 8px; /* Boşluk artırıldı */
-    color: #333333; /* Daha açık mavi-gri ton */
+    margin-bottom: 8px;
+    color: #333333;
     font-weight: bold;
-    display: block; /* Her etiket ayrı satırda */
+    display: block;
     font-size: 16px;
-}
-
-.sidebar form input,
-.sidebar form textarea,
-.sidebar form button { /* <-- button da buradaydı */
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #000000; /* Kenarlık siyah yapıldı */
-    border-radius: 4px;
-    box-sizing: border-box;
-    color: #333; /* Input ve textarea içindeki yazı rengi */
-    font-weight: 530;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
 }
 
 .sidebar form input {
-    margin-bottom: 45px; /* Task Title ile Task Description arasındaki boşluk artırıldı */
-}
-
-.sidebar form textarea {
-    height: 250px; /* Textarea yüksekliği daha da artırıldı */
-    resize: vertical;
-    margin-bottom: 20px; /* Textarea ile Add butonu arasındaki boşluk */
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333;
+    font-weight: 530;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
 }
 
 .sidebar form button {
@@ -97,11 +98,25 @@ body {
     color: white;
     cursor: pointer;
     font-weight: bold;
-    border: none; /* Butonun kenarlığı olmasın */
+    border: none;
+    flex-shrink: 0; 
 }
 
 .sidebar form button:hover {
     background-color: #054882;
+}
+
+/* Not: input, textarea, button için olan genel kuralınız burada. CKEditor ayrı ele alınmalı. */
+.sidebar form input,
+.sidebar form button {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-weight: 530;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
 }
 
 /* Sidebar kapalı hali */
@@ -132,6 +147,49 @@ body {
     left: 10px;
     border-radius: 4px;
     background-color: #36404a;
+}
+
+/* CKEDITOR KAPSAYICISI VE KAYDIRMA AYARLARI */
+.ckeditor-container {
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 30px; 
+    min-height: 0; 
+}
+
+/* CKEditor'ın ana düzenleme alanına doğrudan müdahale */
+.ck-editor__editable {
+    height: 250px; 
+    overflow-y: auto !important; 
+    overflow-x: hidden !important; 
+    box-sizing: border-box; 
+    flex-grow: 0; 
+    flex-shrink: 0; 
+    border: 2px solid #000000 !important; /* YENİ: Siyah kenarlık ekle*/
+    border-radius: 4px; /* Kenar yuvarlaklığını koru*/
+}
+
+/* CKEditor'ın içerik alanı (genellikle bir iframe veya div) */
+.ck-editor__editable.ck-content {
+    height: 250px; 
+    overflow-y: auto !important; 
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+    border: 2px solid #000000 !important; /* YENİ: Siyah kenarlık ekle*/
+    border-radius: 4px; /* Kenar yuvarlaklığını koru*/
+}
+
+/* CKEditor'ın tüm konteynerine stil uygulamak isteyebiliriz (toolbar'ı da kapsayan) */
+.ck.ck-editor__main {
+    flex-grow: 0; 
+    flex-shrink: 0; 
+    height: auto; 
+    display: flex;
+    flex-direction: column;
+}
+
+.ck.ck-powered-by {
+    display: none !important; /* "Powered by CKEditor" yazısını gizler*/
 }
 
 /* Main Content Area */
@@ -172,48 +230,40 @@ header {
 .column h3 {
     text-align: left;
     margin-top: 0;
-    margin-bottom: 15px; /* Başlık ile görev kutusu arasındaki boşluk için orijinal değeri koruyoruz */
+    margin-bottom: 15px;
     color: #333;
     font-size: 16px;
     padding-left: 10px;
-    padding-bottom: 2px; /* Sütun başlığının altına ek boşluk ekledik */
+    padding-bottom: 2px;
 }
 
 .task-list {
     flex-grow: 1;
-    padding-top: 8px; /* Görev kutularının sütun başlığından biraz daha altta başlaması için eklendi */
+    padding-top: 8px;
 }
 
 .task {
     background: #fff;
-    border: 1px solid #000; /* Kenarlık siyah yapıldı */
-    margin-bottom: 11px; /* Görev kutuları arasındaki boşluğu artırmak için artırıldı (8px'den 15px'e) */
+    border: 1px solid #000;
+    margin-bottom: 11px;
     padding: 12px;
     border-radius: 6px;
     cursor: grab;
     user-select: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge */
-    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease; /* Yeni geçişler ekleyelim */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .task:hover {
-    background: #f0f0f0; /* Hafif daha açık gri bir arka plan */
-    border-color: 2px solid #000; /* Mavi bir kenarlık vurgusu */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Daha belirgin gölge */
-    transform: translateY(-2px); /* Kartı hafifçe yukarı kaldır */
+    background: #f0f0f0;
+    border-color: 2px solid #000;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
 }
 
-.task.dragging { /* Sürüklenen öğe için YENİ stil */
-    opacity: 0.5; /* Öğeyi biraz saydamlaştırır, "taşınıyor" hissi verir */
-    /* İsteğe bağlı: Hafif bir gölge veya ölçeklendirme ekleyebilirsiniz */
-    /* box-shadow: 0 6px 12px rgba(0,0,0,0.2); */
-    /* transform: scale(1.03); */
-
-    /* Mavi kesikli kenarlık ve arka planı kaldırıyoruz: */
-    /* border: 2px dashed #007bff; Artık bu yok */
-    /* background-color: #e0f2ff; Artık bu yok */
+.task.dragging {
+    opacity: 0.5;
 }
-
 
 /* Modal Styling */
 .modal-overlay {
