@@ -1,7 +1,13 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'kanban_project'
+
+class TaskForm(Form):
+    title = StringField('Task Title:', validators=[validators.Length(max=100)])
+    description = TextAreaField('Task Description (optional):')
 
 # Basit görev yapısı (veritabanı yerine geçici liste)
 tasks = {
@@ -20,25 +26,28 @@ def get_next_task_id():
 
 @app.route("/")
 def index():
-    return render_template("index.html", tasks=tasks)
+    form = TaskForm(request.form) # Formu sayfaya gönderirken oluşturuyoruz
+    return render_template("index.html", tasks=tasks, form=form)
 
 @app.route("/add", methods=["POST"])
 def add_task():
-    # Frontend'den gelen form verisini al
-    title = request.form["title"]
-    description = request.form.get("description", "")
-    column = "todo" # Görevler varsayılan olarak "To Do" sütununa eklenir
+    form = TaskForm(request.form) # POST isteği geldiğinde formu yeniden oluşturuyoruz
 
-    if title:
+    if form.validate(): # Formun geçerli olup olmadığını kontrol et
+        title = form.title.data
+        description = form.description.data
+        column = "todo" # Görevler varsayılan olarak "To Do" sütununa eklenir
+
         new_id = get_next_task_id() # Yeni benzersiz ID al
-        # Görev sözlüğüne 'id' anahtarını ekleyin
         task = {"id": new_id, "title": title, "desc": description}
         tasks[column].append(task)
-        # Add butonu submit edildiğinde sayfanın yenilenmesini beklediğimiz için redirect kullanıyoruz.
         return redirect(url_for("index"))
-    
-    # Başlık boşsa hata ver (bu durumda frontend zaten alert gösterecek)
-    return redirect(url_for("index")) # Yinede ana sayfaya yönlendir
+    else:
+        # Form doğrulaması başarısız olursa, hataları konsola yazdırabiliriz
+        # veya bunları template'e geri gönderip kullanıcıya gösterebiliriz.
+        print(form.errors)
+        return render_template("index.html", tasks=tasks, form=form) # Hatalarla birlikte formu geri gönder
+
 
 @app.route("/move_task", methods=["POST"])
 def move_task():
