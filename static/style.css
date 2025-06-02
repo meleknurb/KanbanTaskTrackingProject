@@ -261,6 +261,13 @@ header {
     transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
+/* Görev başlıklarının taşmasını engellemek için */
+.task-title {
+    word-wrap: break-word; /* Uzun kelimeleri bölerek alt satıra indirir */
+    overflow-wrap: break-word; /* Aynı işlevi görür, modern tarayıcılar için tercih edilir */
+    white-space: normal; /* Metnin tek satırda kalmasını engeller, normal akışta sarılmasını sağlar */
+}
+
 .task:hover {
     background: #f0f0f0;
     border-color: 2px solid #000;
@@ -319,11 +326,22 @@ header {
     margin-bottom: 15px;
     font-size: 24px;
     color: #333;
+    word-break: break-word; /* Uzun kelimeleri bölerek taşmayı önler */
+    white-space: normal;
 }
 
 .modal p {
     color: #333333;
     line-height: 1.6;
+}
+
+.modal p#modalDesc { /* Sadece modal penceresindeki açıklama paragrafını hedefle */
+    color: #333333;
+    line-height: 1.6;
+    max-height: 400px; /* Bu değeri ekran boyutuna ve ihtiyacınıza göre ayarlayın */
+    overflow-y: auto; /* İçerik taşarsa dikey kaydırma çubuğu göster */
+    word-break: break-word; /* Uzun kelimeleri bölerek taşmayı önler */
+    white-space: pre-wrap; /* Metin içindeki boşlukları ve satır sonlarını korur (CKEditor çıktısı için önemli olabilir) */
 }
 
 /* Animasyonlar */
