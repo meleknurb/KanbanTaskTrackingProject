@@ -4,13 +4,38 @@ document.addEventListener("DOMContentLoaded", () => {
     let editorInstance = null; // CKEditor instance'ını tutmak için
 
     ClassicEditor
-        .create(document.querySelector('#taskDescription')) // #taskDescription textarea'sına bağlı olduğunu varsayalım
-        .then(editor => {
-            editorInstance = editor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    .create(document.querySelector('#taskDescription'), {
+        toolbar: {
+            items: [
+                'undo',
+                'redo',
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                'blockQuote',
+                'outdent',
+                'indent',
+                'alignment'
+            ]
+        },
+        link: {
+            addTargetToExternalLinks: true
+        }
+    })
+    .then(editor => {
+        editorInstance = editor;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+
+
+
 
     function adjustColumnHeight(columnElement) {
         if (!columnElement) return;
