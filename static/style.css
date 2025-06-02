@@ -42,11 +42,14 @@ body {
     transform: translateX(0);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e0e0e0;
-    
+        
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Sidebar'ın ekran yüksekliği kadar olmasını sağlar */
-    overflow: hidden; /* Sidebar'ın kendisinin taşmasını engeller */
+    height: 100vh;
+    position: absolute; /* Ekranın soluna sabitle */
+    top: 0;
+    left: 0;
+    z-index: 10;
 }
 
 .sidebar h2 {
@@ -93,18 +96,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.sidebar form button {
-    background-color: #054882;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    flex-shrink: 0; 
-}
-
-.sidebar form button:hover {
-    background-color: #054882;
-}
 
 /* Not: input, textarea, button için olan genel kuralınız burada. CKEditor ayrı ele alınmalı. */
 .sidebar form input,
@@ -119,12 +110,23 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.sidebar form button {
+    background-color: #054882;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    flex-shrink: 0; 
+
+}
+
+.sidebar form button:hover {
+    background-color: #054882;
+}
+
 /* Sidebar kapalı hali */
 .sidebar.closed {
     transform: translateX(-100%);
-    width: 0;
-    padding: 0;
-    overflow: hidden;
 }
 
 /* Toggle Button */
@@ -199,6 +201,11 @@ body {
     transition: margin-left 0.3s ease;
     overflow-y: auto;
     background-color: #20272c;
+    margin-left: 400px;
+}
+
+.sidebar.closed ~ .main {
+    margin-left: 0;
 }
 
 header {
