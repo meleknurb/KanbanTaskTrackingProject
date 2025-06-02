@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ClassicEditor
         .create(document.querySelector('#taskDescription')) // #taskDescription textarea'sına bağlı olduğunu varsayalım
         .then(editor => {
-             editorInstance = editor;
-         })
-         .catch(error => {
-             console.error(error);
-         });
+            editorInstance = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
     function adjustColumnHeight(columnElement) {
         if (!columnElement) return;
@@ -52,9 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.effectAllowed = "move";
             task.classList.add("dragging");
 
-            setTimeout(() => {
-                if (originalColumn) adjustColumnHeight(originalColumn);
-            }, 0);
+            // Dragstart anında sadece görsel geri bildirim için.
+            // Yükseklik ayarlaması dragend'de yapılabilir.
         });
 
         task.addEventListener("dragend", () => {
@@ -80,21 +79,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".column").forEach(column => {
         column.addEventListener("dragover", e => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
+            e.preventDefault(); // Varsayılan davranışı engelle (drop'a izin ver)
+            e.dataTransfer.dropEffect = "move"; // Sürükleme efekti
+            // Sadece görsel geri bildirim için herhangi bir DOM değişikliği burada yapmıyoruz
         });
 
         column.addEventListener("drop", async e => {
             e.preventDefault();
             if (draggedElement && draggedElement.parentNode) {
                 const targetTaskList = column.querySelector(".task-list");
-                targetTaskList.appendChild(draggedElement);
+                
+                // Elemanın nereye bırakılacağını belirle
+                const afterElement = getDragAfterElement(targetTaskList, e.clientY);
+                
+                // Eğer farklı bir sütuna taşınıyorsa veya aynı sütunda sıralama yapılıyorsa
+                if (afterElement == null) {
+                    targetTaskList.appendChild(draggedElement); // Listenin sonuna ekle
+                } else {
+                    targetTaskList.insertBefore(draggedElement, afterElement); // Belirtilen elemandan önce ekle
+                }
 
+                // Yükseklikleri ayarla
                 if (originalColumn) {
                     requestAnimationFrame(() => adjustColumnHeight(originalColumn));
                 }
                 adjustColumnHeight(column);
 
+                // Backend isteğini gönder
                 const taskId = draggedElement.getAttribute("data-id");
                 const newColumnId = column.id;
                 const originalColumnId = originalColumn?.id || null;
@@ -113,14 +124,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (!response.ok) {
                         console.error("Backend taşımada hata. Geri alınıyor.");
                         if (originalColumn) {
-                            originalColumn.querySelector(".task-list").appendChild(draggedElement);
+                            originalColumn.querySelector(".task-list").appendChild(draggedElement); // Hata durumunda eski yerine geri taşı
                             adjustAllColumnHeights();
                         }
                     }
                 } catch (error) {
                     console.error("Taşıma isteği hatası:", error);
                     if (originalColumn) {
-                        originalColumn.querySelector(".task-list").appendChild(draggedElement);
+                        originalColumn.querySelector(".task-list").appendChild(draggedElement); // Hata durumunda eski yerine geri taşı
                         adjustAllColumnHeights();
                     }
                 }
@@ -150,7 +161,25 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".close").addEventListener("click", closeModal);
     document.getElementById("modalOverlay").addEventListener("click", closeModal);
 
-    // Yükseklikleri ayarla
+    // Yeni yardımcı fonksiyon: Elemanı nereye bırakacağımızı bulur
+    function getDragAfterElement(container, y) {
+        // Sürüklenen eleman hariç tüm görevleri al
+        const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            // Fare pozisyonunun elemanın merkezine olan uzaklığı
+            const offset = y - box.top - box.height / 2;
+            // Eğer fare elemanın üst yarısındaysa ve şu ana kadarki en yakın elemansa
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element; // Başlangıçta en uzak negatif ofset
+    }
+
+    // Yükseklikleri ayarla (sayfa yüklendiğinde ve görevler eklendiğinde)
     adjustAllColumnHeights();
 
     // ✅ AJAX Görev Ekleme
@@ -197,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     newTask.innerHTML = `<div class="task-title">${result.task.title}</div>`;
 
                     todoColumn.appendChild(newTask);
-                    enableTaskEvents(newTask);
+                    enableTaskEvents(newTask); // Yeni göreve sürükle-bırak olaylarını ekle
                     adjustAllColumnHeights();
                 } else {
                     alert("Görev eklenemedi.");
