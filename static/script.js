@@ -1,41 +1,49 @@
+// static/script.js
+
 document.addEventListener("DOMContentLoaded", () => {
     let draggedElement = null;
     let originalColumn = null;
-    let editorInstance = null; // CKEditor instance'ını tutmak için
+    let editorInstance = null;
+    let editEditorInstance = null;
+
+    function showNotification(message, type = "success") {
+        const notificationContainer = document.getElementById("notificationContainer");
+        if (!notificationContainer) {
+            console.error("No notification container found!");
+            return;
+        }
+
+        const notification = document.createElement("div");
+        notification.classList.add("notification-message");
+        if (type === "error") {
+            notification.classList.add("error");
+        }
+        notification.textContent = message;
+
+        notificationContainer.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3500);
+    }
 
     ClassicEditor
-    .create(document.querySelector('#taskDescription'), {
-        toolbar: {
-            items: [
-                'undo',
-                'redo',
-                'heading',
-                '|',
-                'bold',
-                'italic',
-                'link',
-                'bulletedList',
-                'numberedList',
-                'blockQuote',
-                'outdent',
-                'indent',
-                'alignment'
-            ]
-        },
-        link: {
-            addTargetToExternalLinks: true
-        }
-    })
-    .then(editor => {
-        editorInstance = editor;
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-
-
-
+        .create(document.querySelector('#taskDescription'), {
+            toolbar: {
+                items: ['undo','redo','heading','|','bold','italic','link',
+                    'bulletedList','numberedList','blockQuote','outdent','indent'
+                ]
+            },
+            link: {
+                addTargetToExternalLinks: true
+            }
+        })
+        .then(editor => {
+            editorInstance = editor;
+        })
+        .catch(error => {
+            console.error("Error starting CKEditor (insert form):", error);
+        });
 
     function adjustColumnHeight(columnElement) {
         if (!columnElement) return;
@@ -76,9 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
             originalColumn = task.closest(".column");
             e.dataTransfer.effectAllowed = "move";
             task.classList.add("dragging");
-
-            // Dragstart anında sadece görsel geri bildirim için.
-            // Yükseklik ayarlaması dragend'de yapılabilir.
         });
 
         task.addEventListener("dragend", () => {
@@ -88,7 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
             originalColumn = null;
         });
 
-        task.addEventListener("click", () => {
+        task.addEventListener("click", (e) => {
+            if (e.target.closest(".edit-icon")) {
+                return;
+            }
+
             if (draggedElement?.classList.contains("dragging")) return;
 
             const title = task.querySelector(".task-title")?.textContent || "";
@@ -104,9 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".column").forEach(column => {
         column.addEventListener("dragover", e => {
-            e.preventDefault(); // Varsayılan davranışı engelle (drop'a izin ver)
-            e.dataTransfer.dropEffect = "move"; // Sürükleme efekti
-            // Sadece görsel geri bildirim için herhangi bir DOM değişikliği burada yapmıyoruz
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
         });
 
         column.addEventListener("drop", async e => {
@@ -114,23 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if (draggedElement && draggedElement.parentNode) {
                 const targetTaskList = column.querySelector(".task-list");
                 
-                // Elemanın nereye bırakılacağını belirle
                 const afterElement = getDragAfterElement(targetTaskList, e.clientY);
                 
-                // Eğer farklı bir sütuna taşınıyorsa veya aynı sütunda sıralama yapılıyorsa
                 if (afterElement == null) {
-                    targetTaskList.appendChild(draggedElement); // Listenin sonuna ekle
+                    targetTaskList.appendChild(draggedElement);
                 } else {
-                    targetTaskList.insertBefore(draggedElement, afterElement); // Belirtilen elemandan önce ekle
+                    targetTaskList.insertBefore(draggedElement, afterElement);
                 }
 
-                // Yükseklikleri ayarla
                 if (originalColumn) {
                     requestAnimationFrame(() => adjustColumnHeight(originalColumn));
                 }
                 adjustColumnHeight(column);
 
-                // Backend isteğini gönder
                 const taskId = draggedElement.getAttribute("data-id");
                 const newColumnId = column.id;
                 const originalColumnId = originalColumn?.id || null;
@@ -147,16 +151,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
 
                     if (!response.ok) {
-                        console.error("Backend taşımada hata. Geri alınıyor.");
+                        showNotification("An error occurred during task migration.", "error");
+                        console.error("Error in backend migration. Rolling back.");
                         if (originalColumn) {
-                            originalColumn.querySelector(".task-list").appendChild(draggedElement); // Hata durumunda eski yerine geri taşı
+                            originalColumn.querySelector(".task-list").appendChild(draggedElement); 
                             adjustAllColumnHeights();
                         }
                     }
                 } catch (error) {
-                    console.error("Taşıma isteği hatası:", error);
+                    console.error("Move request error:", error);
+                    showNotification("A network error occurred while moving the task.", "error");
                     if (originalColumn) {
-                        originalColumn.querySelector(".task-list").appendChild(draggedElement); // Hata durumunda eski yerine geri taşı
+                        originalColumn.querySelector(".task-list").appendChild(draggedElement); 
                         adjustAllColumnHeights();
                     }
                 }
@@ -164,7 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Sidebar
     const toggleBtn = document.getElementById("toggleBtn");
     const sidebar = document.getElementById("sidebar");
     const main = document.querySelector(".main");
@@ -173,8 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const isOpen = sidebar.classList.contains("open");
         sidebar.classList.toggle("open", !isOpen);
         sidebar.classList.toggle("closed", isOpen);
-        main.classList.toggle("shrink", !isOpen);
-        main.classList.toggle("expanded", isOpen);
         toggleBtn.innerHTML = isOpen ? "❯" : "❮";
     });
 
@@ -183,37 +186,30 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("taskModal").style.display = "none";
     }
 
-    document.querySelector(".close").addEventListener("click", closeModal);
+    document.querySelector("#modalClose").addEventListener("click", closeModal);
     document.getElementById("modalOverlay").addEventListener("click", closeModal);
 
-    // Yeni yardımcı fonksiyon: Elemanı nereye bırakacağımızı bulur
     function getDragAfterElement(container, y) {
-        // Sürüklenen eleman hariç tüm görevleri al
         const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
 
         return draggableElements.reduce((closest, child) => {
             const box = child.getBoundingClientRect();
-            // Fare pozisyonunun elemanın merkezine olan uzaklığı
             const offset = y - box.top - box.height / 2;
-            // Eğer fare elemanın üst yarısındaysa ve şu ana kadarki en yakın elemansa
             if (offset < 0 && offset > closest.offset) {
                 return { offset: offset, element: child };
             } else {
                 return closest;
             }
-        }, { offset: Number.NEGATIVE_INFINITY }).element; // Başlangıçta en uzak negatif ofset
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    // Yükseklikleri ayarla (sayfa yüklendiğinde ve görevler eklendiğinde)
     adjustAllColumnHeights();
 
-    // ✅ AJAX Görev Ekleme
     const taskForm = document.getElementById("taskForm");
     if (taskForm) {
         taskForm.addEventListener("submit", async e => {
             e.preventDefault();
 
-            // CKEditor verisini textarea'ya aktar
             if (editorInstance) {
                 const description = editorInstance.getData();
                 const descField = document.querySelector("textarea[name='description']");
@@ -233,34 +229,194 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
 
                 if (result.success) {
-                    // Formu temizle
                     taskForm.querySelector("#taskTitle").value = '';
                     if (editorInstance) {
-                        editorInstance.setData(''); // CKEditor içeriğini temizle
-                        // CKEditor'ın bağlı olduğu textarea'yı da temizle
+                        editorInstance.setData(''); 
                         taskForm.querySelector("textarea[name='description']").value = ''; 
                     }
 
-                    // Yeni görevi oluştur
                     const todoColumn = document.querySelector("#todo .task-list");
                     const newTask = document.createElement("div");
                     newTask.classList.add("task");
                     newTask.setAttribute("draggable", "true");
                     newTask.setAttribute("data-id", result.task.id);
                     newTask.setAttribute("data-description", result.task.desc || "");
-                    newTask.innerHTML = `<div class="task-title">${result.task.title}</div>`;
-
+                    newTask.innerHTML = `
+                        <div class="task-title">${result.task.title}</div>
+                        <div class="edit-icon" title="Edit card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.121z"/>
+                                <path fill-rule="evenodd" d="M1.5 13.5A.5.5 0 0 0 2 14v1a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5V14a.5.5 0 0 0-.5-.5H2a.5.5 0 0 0-.5.5zm.5-1A.5.5 0 0 0 2 12v-.5a.5.5 0 0 0-1 0V12a.5.5 0 0 0 .5.5z"/>
+                            </svg>
+                        </div>
+                    `;
                     todoColumn.appendChild(newTask);
-                    enableTaskEvents(newTask); // Yeni göreve sürükle-bırak olaylarını ekle
+                    enableTaskEvents(newTask);
                     adjustAllColumnHeights();
                 } else {
-                    alert("Görev eklenemedi.");
+                    showNotification("Failed to add a task.", "error");
                 }
             } else {
                 const errorData = await response.json();
-                console.error("Form hatası:", errorData.errors);
-                alert("Hatalı giriş: " + JSON.stringify(errorData.errors));
+                console.error("Form error:", errorData.errors);
+                showNotification("Incorrect entry " + JSON.stringify(errorData.errors), "error");
             }
         });
     }
+
+    document.querySelectorAll(".board").forEach(board => {
+        board.addEventListener("click", async e => {
+            const editIcon = e.target.closest(".edit-icon");
+            if (editIcon) {
+                const taskElement = editIcon.closest(".task");
+                if (!taskElement) return;
+
+                const taskId = taskElement.getAttribute("data-id");
+                const taskTitle = taskElement.querySelector(".task-title").textContent;
+                const taskDescription = taskElement.getAttribute("data-description");
+
+                document.getElementById("editTaskId").value = taskId;
+                document.getElementById("editTaskTitle").value = taskTitle;
+
+                const editDescriptionElement = document.getElementById("editTaskDescription");
+
+                if (editEditorInstance) {
+                    editEditorInstance.destroy()
+                        .then(() => {
+                            ClassicEditor
+                                .create(editDescriptionElement, {
+                                        toolbar: {
+                                            items: [
+                                                'undo', 'redo', 'heading', '|', 'bold', 'italic', 'link',
+                                                'bulletedList', 'numberedList', 'blockQuote', 'outdent', 'indent'
+                                            ]
+                                        },
+                                        link: { addTargetToExternalLinks: true }
+                                    })
+                                .then(editor => {
+                                    editEditorInstance = editor;
+                                    editEditorInstance.setData(taskDescription || '');
+                                })
+                                .catch(error => console.error("CKEditor yeniden oluşturulurken hata:", error));
+                        });
+                } else {
+                    ClassicEditor
+                        .create(editDescriptionElement, {
+                                toolbar: {
+                                    items: [
+                                        'undo', 'redo', 'heading', '|', 'bold', 'italic', 'link',
+                                        'bulletedList', 'numberedList', 'blockQuote', 'outdent', 'indent'
+                                    ]
+                                },
+                                link: { addTargetToExternalLinks: true }
+                            })
+                        .then(editor => {
+                            editEditorInstance = editor;
+                            editEditorInstance.setData(taskDescription || '');
+                        })
+                        .catch(error => console.error("CKEditor oluşturulurken hata:", error));
+                }
+
+                document.getElementById("editModalOverlay").style.display = "block";
+                document.getElementById("editTaskModal").style.display = "block";
+            }
+        });
+    });
+
+    function closeEditModal() {
+        document.getElementById("editModalOverlay").style.display = "none";
+        document.getElementById("editTaskModal").style.display = "none";
+        if (editEditorInstance) {
+            editEditorInstance.destroy()
+                .then(() => {
+                    editEditorInstance = null;
+                })
+                .catch(error => console.error("CKEditor destroy error:", error));
+        }
+    }
+
+    document.getElementById("editModalClose").addEventListener("click", closeEditModal);
+    document.getElementById("editModalOverlay").addEventListener("click", closeEditModal);
+
+    document.getElementById("saveEditBtn").addEventListener("click", async () => {
+        const taskId = document.getElementById("editTaskId").value;
+        const newTitle = document.getElementById("editTaskTitle").value;
+        const newDescription = editEditorInstance ? editEditorInstance.getData() : '';
+
+        if (!newTitle.trim()) {
+            showNotification("The task title cannot be left blank!", "error");
+            return;
+        }
+
+        try {
+            const response = await fetch('/edit_task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    task_id: taskId,
+                    title: newTitle,
+                    description: newDescription
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    const updatedTaskElement = document.querySelector(`.task[data-id="${taskId}"]`);
+                    if (updatedTaskElement) {
+                        updatedTaskElement.querySelector(".task-title").textContent = result.task.title;
+                        updatedTaskElement.setAttribute("data-description", result.task.desc);
+                    }
+                    showNotification("Task updated successfully!");
+                    closeEditModal();
+                } else {
+                    showNotification("Failed to update task: " + result.error, "error");
+                }
+            } else {
+                const errorData = await response.json();
+                showNotification("An error occurred while updating the task: " + (errorData.error || "Unknown Error"), "error");
+            }
+        } catch (error) {
+            console.error("Task update request error:", error);
+            showNotification("A network error occurred while updating the task.", "error");
+        }
+    });
+
+    document.getElementById("deleteTaskBtnModal").addEventListener("click", async () => {
+        const taskIdToDelete = document.getElementById("editTaskId").value;
+        
+        if (!taskIdToDelete) return;
+
+        try {
+            const response = await fetch('/delete_task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskIdToDelete })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    const taskElementToRemove = document.querySelector(`.task[data-id="${taskIdToDelete}"]`);
+                    if (taskElementToRemove) {
+                        const columnOfTask = taskElementToRemove.closest(".column");
+                        taskElementToRemove.remove();
+                        if (columnOfTask) {
+                            adjustColumnHeight(columnOfTask);
+                        }
+                    }
+                    showNotification("Task deleted successfully!");
+                    closeEditModal();
+                } else {
+                    showNotification("Failed to delete task: " + result.error, "error");
+                }
+            } else {
+                const errorData = await response.json();
+                showNotification("An error occurred while deleting the task: " + (errorData.error || "Unknown Error"), "error");
+            }
+        } catch (error) {
+            console.error("Task delete request error:", error);
+            showNotification("A network error occurred while deleting the task.", "error");
+        }
+    });
 });
