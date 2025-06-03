@@ -2,11 +2,11 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: #20272c;
     display: flex;
-    height: 100vh; /* Ekranın tamamını kapla */
-    overflow: hidden; /* Sayfanın genel kaydırma çubuğunu engeller, ana sayfanın kaymamasını sağlar */
+    height: 100vh; 
+    overflow: hidden;
 }
 
 .project-tasks-header {
@@ -30,7 +30,6 @@ body {
     margin-right: auto;
 }
 
-/* Sidebar */
 .sidebar {
     width: 400px;
     background-color: #e2e2e2;
@@ -38,15 +37,15 @@ body {
     padding: 20px;
     box-sizing: border-box;
     transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
-    flex-shrink: 0; /* Sidebar'ın küçülmesini engelle */
+    flex-shrink: 0; 
     transform: translateX(0);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     border-right: 1px solid #e0e0e0;
-        
+
     display: flex;
     flex-direction: column;
     height: 100vh;
-    position: absolute; /* Ekranın soluna sabitle */
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 10;
@@ -60,20 +59,15 @@ body {
     text-align: center;
     border-bottom: 1px solid #000000e9;
     padding-bottom: 15px;
-    flex-shrink: 0; /* Başlığın sabit kalmasını sağlar */
+    flex-shrink: 0; 
 }
 
 .sidebar form {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Formun sidebar içinde kalan tüm yüksekliği kaplamasını sağlar */
-    overflow-y: auto; /* Formun içeriği taştığında formun kendi içinde kaydırma çubuğu çıkar */
-    padding-bottom: 0; 
-}
-
-.sidebar form > div:not(.ckeditor-container) { /* Başlık inputunu saran div */
-    margin-bottom: 40px; 
-    flex-shrink: 0; 
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 0;
 }
 
 .sidebar form label {
@@ -93,11 +87,9 @@ body {
     color: #333;
     font-weight: 530;
     font-size: 16px;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
-
-/* Not: input, textarea, button için olan genel kuralınız burada. CKEditor ayrı ele alınmalı. */
 .sidebar form input,
 .sidebar form button {
     width: 100%;
@@ -107,7 +99,7 @@ body {
     box-sizing: border-box;
     font-weight: 530;
     font-size: 16px;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .sidebar form button {
@@ -116,7 +108,7 @@ body {
     cursor: pointer;
     font-weight: bold;
     border: none;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 
 }
 
@@ -124,12 +116,20 @@ body {
     background-color: #054882;
 }
 
-/* Sidebar kapalı hali */
 .sidebar.closed {
     transform: translateX(-100%);
 }
 
-/* Toggle Button */
+.sidebar.closed ~ .toggle-btn {
+    left: 10px;
+    border-radius: 4px;
+    background-color: #36404a;
+}
+
+.sidebar.closed ~ .main {
+    margin-left: 0;
+}
+
 .toggle-btn {
     position: fixed;
     top: 10px;
@@ -144,57 +144,6 @@ body {
     border-radius: 0 4px 4px 0;
 }
 
-/* Sidebar kapalıyken butonun konumu ve stilini ayarla */
-.sidebar.closed ~ .toggle-btn {
-    left: 10px;
-    border-radius: 4px;
-    background-color: #36404a;
-}
-
-/* CKEDITOR KAPSAYICISI VE KAYDIRMA AYARLARI */
-.ckeditor-container {
-    display: flex; 
-    flex-direction: column; 
-    margin-bottom: 30px; 
-    min-height: 0; 
-}
-
-/* CKEditor'ın ana düzenleme alanına doğrudan müdahale */
-.ck-editor__editable {
-    height: 250px; 
-    overflow-y: auto !important; 
-    overflow-x: hidden !important; 
-    box-sizing: border-box; 
-    flex-grow: 0; 
-    flex-shrink: 0; 
-    border: 2px solid #000000 !important; /* YENİ: Siyah kenarlık ekle*/
-    border-radius: 4px; /* Kenar yuvarlaklığını koru*/
-}
-
-/* CKEditor'ın içerik alanı (genellikle bir iframe veya div) */
-.ck-editor__editable.ck-content {
-    height: 250px; 
-    overflow-y: auto !important; 
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-    border: 2px solid #000000 !important; /* YENİ: Siyah kenarlık ekle*/
-    border-radius: 4px; /* Kenar yuvarlaklığını koru*/
-}
-
-/* CKEditor'ın tüm konteynerine stil uygulamak isteyebiliriz (toolbar'ı da kapsayan) */
-.ck.ck-editor__main {
-    flex-grow: 0; 
-    flex-shrink: 0; 
-    height: auto; 
-    display: flex;
-    flex-direction: column;
-}
-
-.ck.ck-powered-by {
-    display: none !important; /* "Powered by CKEditor" yazısını gizler*/
-}
-
-/* Main Content Area */
 .main {
     flex-grow: 1;
     padding: 20px;
@@ -202,10 +151,6 @@ body {
     overflow-y: auto;
     background-color: #20272c;
     margin-left: 400px;
-}
-
-.sidebar.closed ~ .main {
-    margin-left: 0;
 }
 
 header {
@@ -259,13 +204,13 @@ header {
     user-select: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
 }
 
-/* Görev başlıklarının taşmasını engellemek için */
 .task-title {
-    word-wrap: break-word; /* Uzun kelimeleri bölerek alt satıra indirir */
-    overflow-wrap: break-word; /* Aynı işlevi görür, modern tarayıcılar için tercih edilir */
-    white-space: normal; /* Metnin tek satırda kalmasını engeller, normal akışta sarılmasını sağlar */
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+    white-space: normal; 
 }
 
 .task:hover {
@@ -279,7 +224,6 @@ header {
     opacity: 0.5;
 }
 
-/* Modal Styling */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -297,7 +241,7 @@ header {
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 30px;
+    padding: 30px 30px 20px 30px;
     border-radius: 8px;
     display: none;
     z-index: 101;
@@ -326,7 +270,7 @@ header {
     margin-bottom: 15px;
     font-size: 24px;
     color: #333;
-    word-break: break-word; /* Uzun kelimeleri bölerek taşmayı önler */
+    word-break: break-word;
     white-space: normal;
 }
 
@@ -335,22 +279,249 @@ header {
     line-height: 1.6;
 }
 
-.modal p#modalDesc { /* Sadece modal penceresindeki açıklama paragrafını hedefle */
+.modal p#modalDesc {
     color: #333333;
     line-height: 1.6;
-    max-height: 400px; /* Bu değeri ekran boyutuna ve ihtiyacınıza göre ayarlayın */
-    overflow-y: auto; /* İçerik taşarsa dikey kaydırma çubuğu göster */
-    word-break: break-word; /* Uzun kelimeleri bölerek taşmayı önler */
-    white-space: pre-wrap; /* Metin içindeki boşlukları ve satır sonlarını korur (CKEditor çıktısı için önemli olabilir) */
+    max-height: 400px;
+    overflow-y: auto;
+    word-break: break-word;
+    white-space: pre-wrap;
 }
 
-/* Animasyonlar */
+.ckeditor-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+    min-height: 0;
+}
+
+.sidebar form > div:not(.ckeditor-container) {
+    margin-bottom: 40px;
+    flex-shrink: 0;
+}
+
+.ck-editor__editable {
+    height: 250px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+    flex-grow: 0;
+    flex-shrink: 0;
+    border: 2px solid #000000 !important;
+    border-radius: 4px;
+}
+
+.ck-editor__editable.ck-content {
+    height: 250px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+    border: 2px solid #000000 !important;
+    border-radius: 4px;
+}
+
+.ck.ck-editor__main {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ck.ck-powered-by {
+    display: none !important;
+}
+
+.ck.ck-editor__top .ck-editor__editable_inline::before {
+    display: none !important;
+}
+
+.edit-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #b0b0b0;
+    color: #333;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 1;
+}
+
+.edit-icon:hover {
+    background-color: #b0b0b0;
+}
+
+.task:hover .edit-icon {
+    opacity: 1;
+}
+
+.edit-icon svg {
+    display: block;
+}
+
+
+#editTaskModal {
+    max-width: 500px;
+    width: 90%;
+    display: none;
+    background-color: #e2e2e2;
+}
+
+
+#editModalOverlay {
+    display: none;
+}
+
+#editTaskModal .form-group {
+    margin-bottom: 20px;
+}
+
+#editTaskModal label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+#editTaskModal h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+    word-break: break-word;
+    white-space: normal;
+}
+
+
+#editTaskModal .modal-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: #333;
+}
+
+#editTaskModal .modal-input#editTaskTitle {
+    border: 2px solid #000000;
+}
+
+#editTaskModal .modal-button {
+    background-color: #054882;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-right: 10px;
+    transition: background-color 0.2s ease;
+}
+
+#editTaskModal .modal-button:hover {
+    background-color: #043a6b;
+}
+
+#editTaskModal .delete-button {
+    background-color: #dc3545;
+}
+
+#editTaskModal .delete-button:hover {
+    background-color: #c82333;
+}
+
+#editTaskModal .ckeditor-modal-container .ck-editor__editable {
+    height: 250px;
+    overflow-y: auto !important;
+    border-radius: 4px !important;
+}
+
+#editTaskModal .ckeditor-modal-container .ck.ck-editor__main .ck-editor__editable {
+    border: 2px solid #000000 !important;
+    border-radius: 0 0 4px 4px !important;
+}
+
+#editTaskModal .ck.ck-toolbar {
+    border: none !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#editTaskModal .ck.ck-editor__main {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#editTaskModal .ck.ck-label {
+    display: none !important;
+}
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; 
+}
+
+.notification-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+    pointer-events: all; 
+    min-width: 250px;
+    max-width: 350px;
+    text-align: center;
+}
+
+.notification-message.error {
+    background-color: #f44336; 
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translate(-50%, -60%); }
     to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
-/* Responsive Tasarım (Basic) */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+
 @media (max-width: 768px) {
     .board {
         flex-direction: column;
