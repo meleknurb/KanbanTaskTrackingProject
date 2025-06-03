@@ -1,18 +1,25 @@
+<!-- templates/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Drag and Drop Kanban</title>
+    <title>TaskFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="notificationContainer" class="notification-container"></div>
+
     <div class="sidebar open" id="sidebar">
-        <h2>New Task</h2> 
+        <h2>New Task</h2>
         <form id="taskForm" action="{{ url_for('add_task') }}" method="POST">
-            {{ form.csrf_token }} 
-            
+            {{ form.csrf_token }}
+
             <div>
                 <label for="taskTitle">{{ form.title.label }}</label>
                 {{ form.title(class="form-control", id="taskTitle", required=True) }}
@@ -24,8 +31,8 @@
                     </ul>
                 {% endif %}
             </div>
-            
-            <div class="ckeditor-container"> 
+
+            <div class="ckeditor-container">
                 <label for="taskDescription">{{ form.description.label }}</label>
                 {{ form.description(class="form-control", id="taskDescription") }}
                 {% if form.description.errors %}
@@ -36,7 +43,7 @@
                     </ul>
                 {% endif %}
             </div>
-            
+
             <input type="hidden" name="column" value="todo" />
             <button type="submit">Add</button>
         </form>
@@ -46,10 +53,11 @@
 
     <div class="main shrink">
         <header class="project-tasks-header">
-            Project Tasks
+            Task Flow
         </header>
         <p class="project-tasks-description">
-            Keep track of your progress by dragging each task from "To Do" to "In Progress" to "Done" as you work on them. You can also click on a task to see more information about it.
+            Optimise your task management. Easily track your workflow with drag-and-drop between ‘To Do’, ‘In Progress’ and ‘Done’. 
+            Also you can access detailed information by clicking on each task card.
         </p>
         <div class="board">
             {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
@@ -57,10 +65,16 @@
                     <h3>{{ column_title }}</h3>
                     <div class="task-list">
                         {% for task in tasks[column] %}
-                            <div class="task" draggable="true" 
-                                 data-description="{{ task.desc | e }}" 
-                                 data-id="{{ task.id }}">
+                            <div class="task" draggable="true"
+                                data-description="{{ task.desc | e }}"
+                                data-id="{{ task.id }}">
                                 <div class="task-title">{{ task.title }}</div>
+                                <div class="edit-icon" title="Kartı düzenle">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.121z"/>
+                                        <path fill-rule="evenodd" d="M1.5 13.5A.5.5 0 0 0 2 14v1a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5V14a.5.5 0 0 0-.5-.5H2a.5.5 0 0 0-.5.5zm.5-1A.5.5 0 0 0 2 12v-.5a.5.5 0 0 0-1 0V12a.5.5 0 0 0 .5.5z"/>
+                                    </svg>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -76,7 +90,24 @@
         <p id="modalDesc"></p>
     </div>
 
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>  
+    <div class="modal-overlay" id="editModalOverlay"></div>
+    <div class="modal" id="editTaskModal">
+        <div class="close" id="editModalClose">&times;</div>
+        <h3>Edit and Delete Task</h3>
+        <input type="hidden" id="editTaskId">
+        <div class="form-group">
+            <label for="editTaskTitle">Task Title:</label>
+            <input type="text" id="editTaskTitle" class="modal-input" required>
+        </div>
+        <div class="form-group ckeditor-modal-container">
+            <label for="editTaskDescription">Task Description:</label>
+            <textarea id="editTaskDescription" class="modal-textarea"></textarea>
+        </div>
+        <button id="saveEditBtn" class="modal-button">Save</button>
+        <button id="deleteTaskBtnModal" class="modal-button delete-button">Delete</button>
+    </div>
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
