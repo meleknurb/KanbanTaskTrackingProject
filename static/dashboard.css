@@ -19,17 +19,6 @@ body {
     padding-top: 20px;
 }
 
-.project-tasks-description {
-    text-align: center;
-    color: #e0e6eb;
-    font-size: 17px;
-    line-height: 1.5;
-    margin-bottom: 40px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .sidebar {
     width: 400px;
     background-color: #e2e2e2;
