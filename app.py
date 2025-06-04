@@ -32,8 +32,12 @@ def find_task_by_id(task_id):
 
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+@app.route("/dashboard")
+def dashboard():
     form = TaskForm(request.form)
-    return render_template("index.html", tasks=tasks, form=form)
+    return render_template("dashboard.html", tasks=tasks, form=form)
 
 @app.route("/add", methods=["POST"])
 def add_task():
@@ -49,7 +53,7 @@ def add_task():
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({"success": True, "task": task})
 
-        return redirect(url_for("index"))
+        return redirect(url_for("dashboard"))
     else:
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({"success": False, "errors": form.errors}), 400
