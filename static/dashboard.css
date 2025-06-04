@@ -1,0 +1,564 @@
+/* static/dashboard.css */
+
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #20272c;
+    display: flex;
+    height: 100vh; 
+    overflow: hidden;
+}
+
+.project-tasks-header {
+    font-size: 35px;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #e0e6eb;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding-top: 20px;
+}
+
+.project-tasks-description {
+    text-align: center;
+    color: #e0e6eb;
+    font-size: 17px;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sidebar {
+    width: 400px;
+    background-color: #e2e2e2;
+    color: #333;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
+    flex-shrink: 0; 
+    transform: translateX(0);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e0e0e0;
+
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 24px;
+    margin-bottom: 35px;
+    color: #333;
+    text-align: center;
+    border-bottom: 1px solid #000000e9;
+    padding-bottom: 15px;
+    flex-shrink: 0; 
+}
+
+.sidebar form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 0;
+}
+
+.sidebar form label {
+    margin-bottom: 8px;
+    color: #333333;
+    font-weight: bold;
+    display: block;
+    font-size: 16px;
+}
+
+.sidebar form input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar form button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-weight: 500;
+    font-size: 16px;
+    background-color: #054882;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    flex-shrink: 0;
+
+}
+
+.sidebar form button:hover {
+    background-color: #054882;
+}
+
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.sidebar.closed ~ .toggle-btn {
+    left: 10px;
+    border-radius: 4px;
+    background-color: #36404a;
+}
+
+.sidebar.closed ~ .main {
+    margin-left: 0;
+}
+
+.toggle-btn {
+    position: fixed;
+    top: 10px;
+    background: #36404a;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 100;
+    transition: left 0.3s ease, border-radius 0.3s ease;
+    left: 410px;
+    border-radius: 0 4px 4px 0;
+}
+
+.main {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    overflow-y: auto;
+    background-color: #20272c;
+    margin-left: 400px;
+}
+
+header {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.board {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: nowrap;
+    min-width: 900px;
+    margin-top: 60px;
+}
+
+.column {
+    flex: 1;
+    min-width: 280px;
+    background: #e2e2e2;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 1px;
+    display: flex;
+    flex-direction: column;
+}
+
+.column h3 {
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-bottom: 2px;
+}
+
+.task-list {
+    flex-grow: 1;
+    padding-top: 8px;
+}
+
+.task {
+    background: #fff;
+    border: 1px solid #000;
+    margin-bottom: 11px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
+}
+
+.task-title {
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+    white-space: normal; 
+}
+
+.task:hover {
+    background: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+.task.dragging {
+    opacity: 0.5;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 99;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px 30px 20px 30px;
+    border-radius: 8px;
+    display: none;
+    z-index: 101;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 28px;
+    color: #777;
+    transition: color 0.2s ease;
+}
+
+.modal .close:hover {
+    color: #333;
+}
+
+.modal h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #333;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.modal p {
+    color: #333333;
+    line-height: 1.6;
+}
+
+.modal p#modalDesc {
+    color: #333333;
+    line-height: 1.6;
+    max-height: 400px;
+    overflow-y: auto;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.ckeditor-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+    min-height: 0;
+}
+
+.sidebar form > div:not(.ckeditor-container) {
+    margin-bottom: 40px;
+    flex-shrink: 0;
+}
+
+.ck-editor__editable {
+    height: 250px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+    flex-grow: 0;
+    flex-shrink: 0;
+    border: 2px solid #000000 !important;
+    border-radius: 4px;
+}
+
+.ck-editor__editable.ck-content {
+    height: 250px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box;
+    border: 2px solid #000000 !important;
+    border-radius: 4px;
+}
+
+.ck.ck-editor__main {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ck.ck-powered-by {
+    display: none !important;
+}
+
+.ck.ck-editor__top .ck-editor__editable_inline::before {
+    display: none !important;
+}
+
+.edit-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #b0b0b0;
+    color: #333;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 1;
+}
+
+.edit-icon:hover {
+    background-color: #b0b0b0;
+}
+
+.task:hover .edit-icon {
+    opacity: 1;
+}
+
+.edit-icon svg {
+    display: block;
+}
+
+
+#editTaskModal {
+    max-width: 500px;
+    width: 90%;
+    display: none;
+    background-color: #e2e2e2;
+}
+
+
+#editModalOverlay {
+    display: none;
+}
+
+#editTaskModal .form-group {
+    margin-bottom: 20px;
+}
+
+#editTaskModal label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+#editTaskModal h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+    word-break: break-word;
+    white-space: normal;
+}
+
+
+#editTaskModal .modal-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: #333;
+}
+
+#editTaskModal .modal-input#editTaskTitle {
+    border: 2px solid #000000;
+}
+
+#editTaskModal .modal-button {
+    background-color: #054882;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-right: 10px;
+    transition: background-color 0.2s ease;
+}
+
+#editTaskModal .modal-button:hover {
+    background-color: #043a6b;
+}
+
+#editTaskModal .delete-button {
+    background-color: #dc3545;
+}
+
+#editTaskModal .delete-button:hover {
+    background-color: #c82333;
+}
+
+#editTaskModal .ckeditor-modal-container .ck-editor__editable {
+    height: 250px;
+    overflow-y: auto !important;
+    border-radius: 4px !important;
+}
+
+#editTaskModal .ckeditor-modal-container .ck.ck-editor__main .ck-editor__editable {
+    border: 2px solid #000000 !important;
+    border-radius: 0 0 4px 4px !important;
+}
+
+#editTaskModal .ck.ck-toolbar {
+    border: none !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#editTaskModal .ck.ck-editor__main {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#editTaskModal .ck.ck-label {
+    display: none !important;
+}
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; 
+}
+
+.notification-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+    pointer-events: all; 
+    min-width: 250px;
+    max-width: 350px;
+    text-align: center;
+}
+
+.notification-message.error {
+    background-color: #f44336; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+
+@media (max-width: 768px) {
+    .board {
+        flex-direction: column;
+        align-items: center;
+        min-width: unset;
+    }
+
+    .column {
+        width: 90%;
+        max-width: 400px;
+        margin-bottom: 20px;
+        min-height: 100px;
+        padding-bottom: 1px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        height: auto;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        padding: 15px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0 !important;
+        padding-top: 60px;
+    }
+
+    .toggle-btn {
+        top: 5px;
+        left: 5px;
+        border-radius: 4px;
+        z-index: 102;
+    }
+
+    .sidebar.open ~ .toggle-btn {
+        left: calc(100% - 60px);
+    }
+}
