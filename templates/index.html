@@ -4,110 +4,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TaskFlow</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow - Your Ultimate Task Management Solution</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div id="notificationContainer" class="notification-container"></div>
+<body> <header> <div class="landing-container">
+            <h1>TaskFlow</h1> <p>Streamline Your Productivity with Intuitive Task Management</p> </div>
+    </header>
 
-    <div class="sidebar open" id="sidebar">
-        <h2>New Task</h2>
-        <form id="taskForm" action="{{ url_for('add_task') }}" method="POST">
-            {{ form.csrf_token }}
-
-            <div>
-                <label for="taskTitle">{{ form.title.label }}</label>
-                {{ form.title(class="form-control", id="taskTitle", required=True) }}
-                {% if form.title.errors %}
-                    <ul class="errors">
-                        {% for error in form.title.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-
-            <div class="ckeditor-container">
-                <label for="taskDescription">{{ form.description.label }}</label>
-                {{ form.description(class="form-control", id="taskDescription") }}
-                {% if form.description.errors %}
-                    <ul class="errors">
-                        {% for error in form.description.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-
-            <input type="hidden" name="column" value="todo" />
-            <button type="submit">Add</button>
-        </form>
-    </div>
-
-    <button class="toggle-btn" id="toggleBtn">❮</button>
-
-    <div class="main shrink">
-        <header class="project-tasks-header">
-            Task Flow
-        </header>
-        <p class="project-tasks-description">
-            Optimise your task management. Easily track your workflow with drag-and-drop between ‘To Do’, ‘In Progress’ and ‘Done’. 
-            Also you can access detailed information by clicking on each task card.
-        </p>
-        <div class="board">
-            {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
-                <div class="column" id="{{ column }}">
-                    <h3>{{ column_title }}</h3>
-                    <div class="task-list">
-                        {% for task in tasks[column] %}
-                            <div class="task" draggable="true"
-                                data-description="{{ task.desc | e }}"
-                                data-id="{{ task.id }}">
-                                <div class="task-title">{{ task.title }}</div>
-                                <div class="edit-icon" title="Kartı düzenle">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.121z"/>
-                                        <path fill-rule="evenodd" d="M1.5 13.5A.5.5 0 0 0 2 14v1a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5V14a.5.5 0 0 0-.5-.5H2a.5.5 0 0 0-.5.5zm.5-1A.5.5 0 0 0 2 12v-.5a.5.5 0 0 0-1 0V12a.5.5 0 0 0 .5.5z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+    <section class="features-section"> <div class="landing-container">
+            <h2>Key Features</h2> <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>Drag-and-Drop Interface</h3>
+                    <p>Effortlessly move tasks between 'To Do', 'In Progress', and 'Done' columns. Visual task management has never been easier.</p>
                 </div>
-            {% endfor %}
+                <div class="feature-item">
+                    <h3>Rich Text Descriptions</h3>
+                    <p>Add detailed notes, links, and formatting to your tasks with an integrated rich text editor, ensuring all information is readily available.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Instant Task Updates</h3>
+                    <p>Edit task titles and descriptions directly through a dedicated modal, with changes reflected instantly across your board.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Scalable Architecture</h3>
+                    <p>Built with a robust and scalable architecture, TaskFlow is designed to grow with your needs, handling increasing demands effortlessly.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Secure Data Storage</h3>
+                    <p>Your task data is securely stored and managed with Supabase, ensuring reliability and robust protection for your information.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>User Authentication</h3>
+                    <p>Safeguard your tasks with secure user authentication, allowing only authorized access to your personalized task boards.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="taskModal">
-        <div class="close" id="modalClose">&times;</div>
-        <h3 id="modalTitle"></h3>
-        <p id="modalDesc"></p>
-    </div>
+    <section class="about-us-section"> <div class="landing-container">
+            <h2>About TaskFlow</h2> <p>TaskFlow is designed to simplify your workflow and enhance your productivity. Our goal is to provide a clean, efficient, and user-friendly platform where you can organize your thoughts and track your progress with ease. Say goodbye to scattered notes and hello to streamlined task management.</p>
+            <a href="{{ url_for('dashboard') }}" class="primary-button cta-button">Get Started Now</a> </div>
+    </section>
 
-    <div class="modal-overlay" id="editModalOverlay"></div>
-    <div class="modal" id="editTaskModal">
-        <div class="close" id="editModalClose">&times;</div>
-        <h3>Edit and Delete Task</h3>
-        <input type="hidden" id="editTaskId">
-        <div class="form-group">
-            <label for="editTaskTitle">Task Title:</label>
-            <input type="text" id="editTaskTitle" class="modal-input" required>
+    <footer> <div class="landing-container">
+            <p>&copy; 2025 TaskFlow. All rights reserved.</p>
         </div>
-        <div class="form-group ckeditor-modal-container">
-            <label for="editTaskDescription">Task Description:</label>
-            <textarea id="editTaskDescription" class="modal-textarea"></textarea>
-        </div>
-        <button id="saveEditBtn" class="modal-button">Save</button>
-        <button id="deleteTaskBtnModal" class="modal-button delete-button">Delete</button>
-    </div>
-
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </footer>
 </body>
 </html>
