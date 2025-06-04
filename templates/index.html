@@ -1,5 +1,4 @@
 <!-- templates/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TaskFlow - Your Ultimate Task Management Solution</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body> <header> <div class="landing-container">
+<body> 
+    {% include 'navbar.html' %}
+    <header> <div class="landing-container">
             <h1>TaskFlow</h1> <p>Streamline Your Productivity with Intuitive Task Management</p> </div>
     </header>
 
@@ -23,7 +25,7 @@
                     <p>Effortlessly move tasks between 'To Do', 'In Progress', and 'Done' columns. Visual task management has never been easier.</p>
                 </div>
                 <div class="feature-item">
-                    <h3>Rich Text Descriptions</h3>
+                    <h3>Rich Task Descriptions</h3>
                     <p>Add detailed notes, links, and formatting to your tasks with an integrated rich text editor, ensuring all information is readily available.</p>
                 </div>
                 <div class="feature-item">
