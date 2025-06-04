@@ -1,0 +1,53 @@
+/* static/navbar.css */
+
+.navbar {
+    background-color: #7a8087; /* Soğuk mavi-gri */
+    padding: 5px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: sticky; /* Veya position: fixed; tercihine göre */
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 40px; /* Yüksekliği biraz artırdık */
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.5em;
+    color: #f8f9fa; /* Metin rengini BEYAZ veya çok açık griye çevirdik */
+    text-decoration: none;
+    margin-right: 20px;
+    margin-left: -90px;
+}
+
+.navbar-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 25px;
+}
+
+.navbar-links li a {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 1.05em;
+    color: #e0e6eb; /* Bağlantı metin rengini açık griye çevirdik */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-links li a:hover,
+.navbar-links li a:focus {
+    color: #ffffff; /* Hover rengini daha da açık (beyaz) yapabiliriz */
+}
