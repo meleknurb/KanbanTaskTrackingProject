@@ -4,19 +4,17 @@ body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background-color: #20272c;
-    display: flex;
-    height: 100vh; 
-    overflow: hidden;
+    overflow-x: hidden;
+    display: block;
 }
 
 .project-tasks-header {
     font-size: 35px;
     text-align: center;
-    margin-bottom: 10px;
     color: #e0e6eb;
     font-weight: bold;
     letter-spacing: 1px;
-    padding-top: 20px;
+    margin-top: -20px;
 }
 
 .sidebar {
@@ -33,9 +31,9 @@ body {
 
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    position: absolute;
-    top: 0;
+    height: calc(100vh - 40px);
+    position: fixed;
+    top: 40px;
     left: 0;
     z-index: 10;
 }
@@ -115,7 +113,7 @@ body {
 
 .toggle-btn {
     position: fixed;
-    top: 10px;
+    top: 45px;
     background: #36404a;
     color: #fff;
     border: none;
@@ -123,17 +121,18 @@ body {
     cursor: pointer;
     z-index: 100;
     transition: left 0.3s ease, border-radius 0.3s ease;
-    left: 410px;
+    left: 406px;
     border-radius: 0 4px 4px 0;
 }
 
 .main {
-    flex-grow: 1;
     padding: 20px;
     transition: margin-left 0.3s ease;
     overflow-y: auto;
     background-color: #20272c;
     margin-left: 400px;
+    padding-top: 20px;
+    margin-top: 40px;
 }
 
 header {
@@ -523,8 +522,8 @@ header {
     .sidebar {
         width: 100%;
         position: fixed;
-        height: auto;
-        top: 0;
+        height: (100vh - 40px);
+        top: 40px;
         left: 0;
         transform: translateX(-100%);
         padding: 15px;
@@ -537,7 +536,7 @@ header {
 
     .main {
         margin-left: 0 !important;
-        padding-top: 60px;
+        padding-top: 80px;
     }
 
     .toggle-btn {
@@ -549,5 +548,6 @@ header {
 
     .sidebar.open ~ .toggle-btn {
         left: calc(100% - 60px);
+        top: 5px;
     }
 }
