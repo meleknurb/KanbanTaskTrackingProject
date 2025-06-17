@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Kanban</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main class="container">
+        <h2><i class="fas fa-cogs"></i> Account Settings</h2>
+        <div class="settings-section">
+            <h3>Update Email Address</h3>
+            <form method="POST" action="{{ url_for('settings') }}" class="settings-form">
+                {{ email_form.csrf_token }}
+                <div class="form-group">
+                    {{ email_form.email.label(class_="form-label") }}
+                    {{ email_form.email(class_="form-control", value=user.email) }}
+                    {% if email_form.email.errors %}
+                        <ul class="errors">
+                            {% for error in email_form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ email_form.confirm_password.label(class_="form-label") }}
+                    {{ email_form.confirm_password(class_="form-control") }}
+                    {% if email_form.confirm_password.errors %}
+                        <ul class="errors">
+                            {% for error in email_form.confirm_password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                {{ email_form.submit(class_="btn btn-primary") }}
+            </form>
+        </div>
+
+        <div class="settings-section">
+            <h3>Update Password</h3>
+            <form method="POST" action="{{ url_for('settings') }}" class="settings-form">
+                {{ password_form.csrf_token }}
+                <div class="form-group">
+                    {{ password_form.current_password.label(class_="form-label") }}
+                    {{ password_form.current_password(class_="form-control") }}
+                    {% if password_form.current_password.errors %}
+                        <ul class="errors">
+                            {% for error in password_form.current_password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ password_form.new_password.label(class_="form-label") }}
+                    {{ password_form.new_password(class_="form-control") }}
+                    {% if password_form.new_password.errors %}
+                        <ul class="errors">
+                            {% for error in password_form.new_password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ password_form.confirm_new_password.label(class_="form-label") }}
+                    {{ password_form.confirm_new_password(class_="form-control") }}
+                    {% if password_form.confirm_new_password.errors %}
+                        <ul class="errors">
+                            {% for error in password_form.confirm_new_password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                {{ password_form.submit(class_="btn btn-primary") }}
+            </form>
+        </div>
+
+        <div class="settings-section delete-account-section">
+            <h3>Delete Account</h3>
+            <p><strong>Warning:</strong> Deleting your account is irreversible. All your tasks will be permanently removed.</p>
+            <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                {{ email_form.csrf_token }}
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete My Account</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TaskFlow. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
