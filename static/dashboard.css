@@ -14,7 +14,7 @@ body {
     color: #e0e6eb;
     font-weight: bold;
     letter-spacing: 1px;
-    margin-top: -20px;
+    margin-top: -27px;
 }
 
 .sidebar {
@@ -157,9 +157,9 @@ header {
     background: #e2e2e2;
     padding: 15px;
     border-radius: 8px;
-    min-height: 1px;
     display: flex;
     flex-direction: column;
+    height: auto;
 }
 
 .column h3 {
