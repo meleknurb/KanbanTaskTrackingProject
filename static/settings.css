@@ -1,0 +1,245 @@
+/* static/settings.css */
+
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #20272c;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+header {
+    background-color: #7a8087;
+    color: #f8f9fa;
+    padding: 10px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+header h1 a {
+    color: #f8f9fa;
+    text-decoration: none;
+}
+
+header nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+header nav ul li a {
+    color: #e0e6eb;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 1.05em;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #ffffff;
+}
+
+
+main {
+    flex: 1;
+    padding-top: 30px;
+    padding-bottom: 50px;
+}
+
+main h2 {
+    text-align: center;
+    color: #e0e6eb;
+    margin-bottom: 40px;
+    font-size: 2.2em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.settings-section {
+    background-color: #e2e2e2;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    margin-bottom: 30px;
+    max-width: 500px;
+}
+
+.settings-section h3 {
+    color: #20272c;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    border-bottom: 1px solid #000000e9;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+.settings-form .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.settings-form .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.settings-form .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.settings-form .form-control:focus {
+    border-color: #054882;
+    box-shadow: 0 0 0 0.2rem rgba(5, 72, 130, 0.25);
+    outline: none;
+}
+
+.settings-form .errors {
+    color: #dc3545;
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+
+.btn {
+    display: inline-block;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 15px;
+}
+
+.btn-primary {
+    background-color: #054882;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #043a6b;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c22e3a;
+    transform: translateY(-2px);
+}
+
+.delete-account-section {
+    text-align: center;
+    border: 1px solid #dc3545;
+    background-color: #f8d7da;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.delete-account-section p {
+    margin-bottom: 20px;
+    color: #721c24;
+    font-size: 1.1em;
+}
+
+footer {
+    background-color: #20272c;
+    color: #e0e6eb;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    header nav ul {
+        margin-top: 15px;
+    }
+
+    header nav ul li {
+        margin: 0 10px;
+    }
+
+    .settings-section {
+        padding: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .main {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    main h2 {
+        font-size: 1.8em;
+    }
+
+    .settings-section h3 {
+        font-size: 1.5em;
+    }
+
+    .btn {
+        font-size: 1.1em;
+        padding: 12px 20px;
+    }
+}
