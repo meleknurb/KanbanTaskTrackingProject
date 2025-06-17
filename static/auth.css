@@ -3,24 +3,24 @@
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #20272c; /* Dashboard ile uyumlu bir arka plan rengi */
+    background-color: #20272c;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     color: #333;
-    overflow: auto; /* İçerik taşarsa kaydırma çubuğu çıksın */
+    overflow: auto;
 }
 
 .auth-container {
-    background-color: #e2e2e2; /* Sidebar ile uyumlu, açık bir arka plan */
+    background-color: #e2e2e2;
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 400px;
     text-align: center;
-    box-sizing: border-box; /* Padding'in genişliğe dahil olmasını sağlar */
+    box-sizing: border-box;
 }
 
 .auth-container h2 {
@@ -55,7 +55,7 @@ body {
 }
 
 .auth-button {
-    background-color: #054882; /* Ana düğme rengi */
+    background-color: #054882;
     color: white;
     padding: 15px 25px;
     border: none;
@@ -69,8 +69,8 @@ body {
 }
 
 .auth-button:hover {
-    background-color: #043a6b; /* Hover rengi */
-    transform: translateY(-2px); /* Hafif yukarı kaydırma efekti */
+    background-color: #043a6b;
+    transform: translateY(-2px);
 }
 
 .auth-switch {
@@ -91,33 +91,6 @@ body {
     text-decoration: underline;
 }
 
-/* Flash mesajları için stiller (backend'i bağladığımızda kullanılacak) */
-.flashes {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
-}
-
-.flashes li {
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    font-size: 0.95em;
-    font-weight: bold;
-}
-
-.flashes .success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.flashes .error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
 .back-to-home {
     display: inline-block;
     margin-top: 30px;
@@ -133,7 +106,6 @@ body {
     text-decoration: underline;
 }
 
-/* Responsive tasarımlar */
 @media (max-width: 600px) {
     .auth-container {
         padding: 30px 20px;
