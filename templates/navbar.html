@@ -5,8 +5,14 @@
         <a href="{{ url_for('index') }}" class="navbar-brand">TaskFlow</a>
         <ul class="navbar-links">
             <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('login') }}">Sign In</a></li>
-            <li><a href="{{ url_for('register') }}">Sign Up</a></li>
+            
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('logout') }}" class="nav-link">Log Out</a></li>
+                <li><a href="{{ url_for('settings') }}" class="nav-link">Settings</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}" class="nav-link">Sign In</a></li>
+                <li><a href="{{ url_for('register') }}" class="nav-link">Sign Up</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>
