@@ -1,4 +1,4 @@
-// auth.js
+// static/js/auth.js
 
 import { showNotification } from './notification.js'; 
 

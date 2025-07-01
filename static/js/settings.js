@@ -1,4 +1,5 @@
-// settings.js
+// static/js/settings.js
+
 import { showNotification } from './notification.js'; 
 
 document.addEventListener("DOMContentLoaded", () => {

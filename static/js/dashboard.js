@@ -1,4 +1,4 @@
-// dashboard.js
+// static/js/dashboard.js
 
 import { showNotification } from './notification.js';
 

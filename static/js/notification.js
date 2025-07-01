@@ -1,4 +1,4 @@
-// notification.js
+// static/js/notification.js
 
 /**
  * @param {string} message 
