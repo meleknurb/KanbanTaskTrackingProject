@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+# src/app.py
+
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, current_user, login_required
 from models import db, User, Task, login_manager
-# UpdateUsernameForm'u import listesinden kaldırıyoruz
 from forms import RegisterForm, LoginForm, TaskForm, UpdateEmailForm, UpdatePasswordForm
 import os
 from dotenv import load_dotenv
@@ -36,18 +37,29 @@ def login():
         return redirect(url_for('dashboard'))
 
     form = LoginForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            form.email.data = data.get('email')
+            form.password.data = data.get('password')
+            if 'csrf_token' in data:
+                form.csrf_token.data = data.get('csrf_token')
 
-        user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):
-            login_user(user)
-            next_page = request.args.get('next')
-            flash('Login successful!', 'success')
-            return redirect(next_page or url_for('dashboard'))
+        if form.validate_on_submit() or (request.is_json and form.validate()):
+            email = form.email.data
+            password = form.password.data
+
+            user = User.query.filter_by(email=email).first()
+            if user and user.check_password(password):
+                login_user(user)
+                next_page = request.args.get('next') or url_for('dashboard')
+                return redirect(next_page)
+            else:
+                return jsonify({"success": False, "message": "Email or password is incorrect. Please try again."}), 401
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            errors = {field: errors for field, errors in form.errors.items()}
+            return jsonify({"success": False, "message": "Validation failed.", "errors": errors}), 400
+    
     return render_template('login.html', form=form)
 
 
@@ -57,27 +69,30 @@ def register():
         return redirect(url_for('dashboard'))
 
     form = RegisterForm()
-    if form.validate_on_submit():
-        # username = form.username.data # KALDIRILDI
-        email = form.email.data
-        password = form.password.data
+    if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            form.email.data = data.get('email')
+            form.password.data = data.get('password')
 
-        existing_user_email = User.query.filter_by(email=email).first()
-        # existing_user_username = User.query.filter_by(username=username).first() # KALDIRILDI
+        if form.validate_on_submit() or (request.is_json and form.validate()):
+            email = form.email.data
+            password = form.password.data
 
-        if existing_user_email:
-            flash('That email is already taken. Please choose a different one.', 'warning')
-        # elif existing_user_username: # KALDIRILDI
-        #    flash('That username is already taken. Please choose a different one.', 'warning') # KALDIRILDI
+            existing_user_email = User.query.filter_by(email=email).first()
+
+            if existing_user_email:
+                return jsonify({"success": False, "message": "That email is already taken. Please choose a different one."}), 409
+            else:
+                new_user = User(email=email)
+                new_user.set_password(password)
+                db.session.add(new_user)
+                db.session.commit()
+                login_user(new_user)
+                return redirect(url_for('dashboard'))
         else:
-            # new_user = User(email=email, username=username) # username kaldırıldı
-            new_user = User(email=email) # Sadece email ile kullanıcı oluştur
-            new_user.set_password(password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Your account has been created! You are now able to log in', 'success')
-            login_user(new_user)
-            return redirect(url_for('dashboard'))
+            errors = {field: errors for field, errors in form.errors.items()}
+            return jsonify({"success": False, "message": "Validation failed.", "errors": errors}), 400
 
     return render_template('register.html', form=form)
 
@@ -85,7 +100,6 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
 @app.route("/dashboard")
@@ -122,12 +136,9 @@ def dashboard():
 
     except Exception as e:
         app.logger.error(f"Error fetching tasks for user {user_id}: {e}")
-        flash('An error occurred while loading your tasks.', 'danger')
+        pass 
 
     form = TaskForm()
-    # current_user.username artık olmayacağı için, kullanıcı adını gösteren bir yer varsa kaldırılmalı
-    # Eğer dashboard'da kullanıcı adını göstermiyorsan, bu satırı olduğu gibi bırakabilirsin.
-    # user_email'ı şablona göndermeye devam edebiliriz.
     return render_template("dashboard.html", tasks=tasks_by_status, form=form, user_email=current_user.email)
 
 
@@ -147,28 +158,19 @@ def add_task():
         )
         db.session.add(new_task)
         db.session.commit()
-        flash('Task added successfully!', 'success')
-
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({
-                "success": True,
-                "task": {
-                    "id": new_task.id,
-                    "title": new_task.title,
-                    "description": new_task.description,
-                    "status": new_task.status
-                }
-            })
-        return redirect(url_for("dashboard"))
+        return jsonify({
+            "success": True,
+            "message": "Task added successfully!",
+            "task": {
+                "id": new_task.id,
+                "title": new_task.title,
+                "description": new_task.description,
+                "status": new_task.status
+            }
+        })
     else:
-        if form.errors:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    flash(f"Error in {field}: {error}", 'danger')
-
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"success": False, "errors": form.errors}), 400
-        return redirect(url_for("dashboard"))
+        errors = {field: errors for field, errors in form.errors.items()}
+        return jsonify({"success": False, "message": "Validation failed.", "errors": errors}), 400
 
 
 @app.route("/move_task", methods=["POST"])
@@ -179,20 +181,21 @@ def move_task():
     new_status = data.get("new_status")
 
     if not all([task_id, new_status]):
-        return jsonify({"error": "Missing data: Information required to carry out a task is missing"}), 400
+        return jsonify({"success": False, "message": "Missing data: Information required to carry out a task is missing"}), 400
 
     try:
         task_id = int(task_id)
     except (ValueError, TypeError):
-        return jsonify({"error": "Invalid task ID format"}), 400
+        return jsonify({"success": False, "message": "Invalid task ID format"}), 400
 
     task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
 
     if task:
         task.status = new_status
         db.session.commit()
-        flash('Task status updated successfully!', 'success')
         return jsonify({
+            "success": True,
+            "message": "Task status updated successfully!",
             "task": {
                 "id": task.id,
                 "title": task.title,
@@ -201,8 +204,7 @@ def move_task():
             }
         }), 200
     else:
-        flash('Task not found or not authorized to move.', 'danger')
-        return jsonify({"error": "Task not found or not yours"}), 404
+        return jsonify({"success": False, "message": "Task not found or not yours"}), 404
 
 @app.route("/edit_task", methods=["POST"])
 @login_required
@@ -213,12 +215,12 @@ def edit_task():
     new_description = data.get("description")
 
     if not all([task_id, new_title is not None, new_description is not None]):
-        return jsonify({"error": "Missing data: Information required to organise a task is missing"}), 400
+        return jsonify({"success": False, "message": "Missing data: Information required to organise a task is missing"}), 400
 
     try:
         task_id = int(task_id)
     except (ValueError, TypeError):
-        return jsonify({"error": "Invalid task ID format"}), 400
+        return jsonify({"success": False, "message": "Invalid task ID format"}), 400
 
     task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
 
@@ -226,9 +228,9 @@ def edit_task():
         task.title = new_title
         task.description = new_description
         db.session.commit()
-        flash('Task updated successfully!', 'success')
         return jsonify({
             "success": True,
+            "message": "Task updated successfully!",
             "task": {
                 "id": task.id,
                 "title": task.title,
@@ -237,8 +239,7 @@ def edit_task():
             }
         }), 200
     else:
-        flash('Task not found or not authorized to edit.', 'danger')
-        return jsonify({"error": "Task not found or not yours"}), 404
+        return jsonify({"success": False, "message": "Task not found or not yours"}), 404
 
 
 @app.route("/delete_task", methods=["POST"])
@@ -248,61 +249,28 @@ def delete_task():
     task_id = data.get("task_id")
 
     if not task_id:
-        return jsonify({"error": "Missing task ID: Task_id required to delete task"}), 400
+        return jsonify({"success": False, "message": "Missing task ID: Task_id required to delete task"}), 400
 
     try:
         task_id = int(task_id)
     except (ValueError, TypeError):
-        return jsonify({"error": "Invalid task ID format"}), 400
+        return jsonify({"success": False, "message": "Invalid task ID format"}), 400
 
     task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
 
     if task:
         db.session.delete(task)
         db.session.commit()
-        flash('Task deleted successfully!', 'success')
-        return jsonify({"success": True}), 200
+        return jsonify({"success": True, "message": "Task deleted successfully!"}), 200
     else:
-        flash('Task not found or not authorized to delete.', 'danger')
-        return jsonify({"error": "Task not found or not yours"}), 404
+        return jsonify({"success": False, "message": "Task not found or not yours"}), 404
+    
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings', methods=['GET'])
 @login_required
 def settings():
     email_form = UpdateEmailForm()
     password_form = UpdatePasswordForm()
-    if email_form.validate_on_submit() and email_form.submit.name in request.form:
-        new_email = email_form.email.data
-        current_password_for_email = email_form.confirm_password.data
-
-        if not current_user.check_password(current_password_for_email):
-            flash('Incorrect password for email update. Please try again.', 'danger')
-            return redirect(url_for('settings'))
-
-        if new_email != current_user.email:
-            existing_user_with_new_email = User.query.filter_by(email=new_email).first()
-            if existing_user_with_new_email:
-                flash('That email address is already in use. Please choose a different one.', 'warning')
-                return redirect(url_for('settings'))
-
-        current_user.email = new_email
-        db.session.commit()
-        flash('Your email address has been updated successfully!', 'success')
-        return redirect(url_for('settings'))
-
-    if password_form.validate_on_submit() and password_form.submit.name in request.form:
-        current_password_for_password = password_form.current_password.data
-        new_password = password_form.new_password.data
-
-        if not current_user.check_password(current_password_for_password):
-            flash('Incorrect current password for password update. Please try again.', 'danger')
-            return redirect(url_for('settings'))
-
-        current_user.set_password(new_password)
-        db.session.commit()
-        flash('Your password has been updated successfully!', 'success')
-        return redirect(url_for('settings'))
-
     return render_template(
         'settings.html',
         user=current_user,
@@ -310,31 +278,72 @@ def settings():
         password_form=password_form
     )
 
+@app.route('/update_email', methods=['POST'])
+@login_required
+def update_email():
+    email_form = UpdateEmailForm()
+    if request.is_json:
+        data = request.get_json()
+        email_form.email.data = data.get('email')
+        email_form.confirm_password.data = data.get('confirm_password')
+        if 'csrf_token' in data:
+            email_form.csrf_token.data = data.get('csrf_token')
+
+    if email_form.validate():
+        if not current_user.check_password(email_form.confirm_password.data):
+            return jsonify({"success": False, "message": "Incorrect password for email update. Please try again."}), 401
+
+        if email_form.email.data != current_user.email:
+            existing_user_with_new_email = User.query.filter_by(email=email_form.email.data).first()
+            if existing_user_with_new_email and existing_user_with_new_email.id != current_user.id:
+                return jsonify({"success": False, "message": "That email address is already in use. Please choose a different one."}), 409
+
+        current_user.email = email_form.email.data
+        db.session.commit()
+        return jsonify({"success": True, "message": "Your email address has been updated successfully!"})
+    else:
+        errors = {field: errors for field, errors in email_form.errors.items()}
+        return jsonify({"success": False, "message": "Validation failed for email update.", "errors": errors}), 400
+
+@app.route('/update_password', methods=['POST'])
+@login_required
+def update_password():
+    password_form = UpdatePasswordForm()
+    if request.is_json:
+        data = request.get_json()
+        password_form.current_password.data = data.get('current_password')
+        password_form.new_password.data = data.get('new_password')
+        password_form.confirm_new_password.data = data.get('confirm_new_password')
+        if 'csrf_token' in data:
+            password_form.csrf_token.data = data.get('csrf_token')
+
+    if password_form.validate():
+        if not current_user.check_password(password_form.current_password.data):
+            return jsonify({"success": False, "message": "Incorrect current password for password update. Please try again."}), 401
+
+        current_user.set_password(password_form.new_password.data)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Your password has been updated successfully!"})
+    else:
+        errors = {field: errors for field, errors in password_form.errors.items()}
+        return jsonify({"success": False, "message": "Validation failed for password update.", "errors": errors}), 400
+
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    # current_user'ın ID'sini logout_user() çağrısından önce al
     user_id_to_delete = current_user.id
     
-    # Kullanıcının oturumunu kapat
     logout_user()
 
-    # Kullanıcıyı veritabanından çek (çünkü current_user artık AnonymousUserMixin)
     user_to_delete = User.query.get(user_id_to_delete)
 
     if user_to_delete:
-        # Kullanıcıya ait tüm görevleri sil
         Task.query.filter_by(user_id=user_to_delete.id).delete()
-        
-        # Kullanıcıyı sil
         db.session.delete(user_to_delete)
         db.session.commit()
-        flash('Your account has been successfully deleted.', 'info')
+        return jsonify({"success": True, "message": "Your account has been successfully deleted."})
     else:
-        # Bu duruma normalde düşmemeli ama her ihtimale karşı
-        flash('Failed to delete account. User not found.', 'danger')
-    
-    return redirect(url_for('index'))
+        return jsonify({"success": False, "message": "Failed to delete account. User not found."}), 404
 
 
 if __name__ == "__main__":
