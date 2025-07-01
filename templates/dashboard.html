@@ -1,18 +1,25 @@
+<!-- templates/dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>TaskFlow</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}"> 
 </head>
+
 <body>
     {% include 'navbar.html' %}
 
@@ -58,6 +65,7 @@
         <header class="project-tasks-header">
             Task Flow
         </header>
+
         <div class="board">
             {% for column, column_title in [('todo', 'To Do'), ('in_progress', 'In Progress'), ('done', 'Done')] %}
                 <div class="column" id="{{ column }}">
@@ -107,6 +115,6 @@
     </div>
 
     <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
-    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

@@ -1,19 +1,28 @@
+<!-- templates/register.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - TaskFlow</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
+    <div id="notificationContainer" class="notification-container"></div>
+
     <div class="auth-container">
         <h2>Sign Up</h2>
-        <form method="POST">
-            {{ form.csrf_token }}  
+        <form id="registerForm" method="POST">
+            {{ form.csrf_token(id='register_csrf_token') }} 
 
             <div class="form-group">
                 {{ form.email.label }}
@@ -26,6 +35,7 @@
                     </ul>
                 {% endif %}
             </div>
+
             <div class="form-group">
                 {{ form.password.label }}
                 {{ form.password(class="form-control") }}
@@ -40,8 +50,12 @@
 
             {{ form.submit(class="auth-button") }}
         </form>
+
         <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Sign In</a></p>
         <a href="{{ url_for('index') }}" class="back-to-home">Back to Home</a>
+        
     </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
