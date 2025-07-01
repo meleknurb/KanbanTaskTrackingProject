@@ -1,3 +1,5 @@
+# src/forms.py
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
@@ -21,15 +23,6 @@ class UpdateEmailForm(FlaskForm):
     email = StringField('New Email', validators=[DataRequired(), Email('Please enter a valid email address.')])
     confirm_password = PasswordField('Confirm Your Password', validators=[DataRequired()])
     submit = SubmitField('Save Email')
-
-    # Bu doğrulama metodu, e-postanın zaten kullanımda olup olmadığını kontrol eder.
-    # Eğer User modelini import ettiyseniz ve kullanmak istiyorsanız bu kısmı etkinleştirin.
-    # def validate_email(self, email):
-    #     if email.data != current_user.email: # Sadece email değişiyorsa kontrol et
-    #         user = User.query.filter_by(email=email.data).first()
-    #         if user:
-    #             raise ValidationError('This email address is already in use. Please choose a different one.')
-
 
 class UpdatePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
