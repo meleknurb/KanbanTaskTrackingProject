@@ -1,4 +1,4 @@
-﻿# Kanban Project
+﻿# TASKFLOW
 
 A minimalistic and user-friendly Kanban board application. Easily manage tasks, track their status and increase your productivity. This project offers user authentication, task management and an intuitive interface.
 
