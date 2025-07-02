@@ -3,8 +3,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_wtf.csrf import CSRFProtect
 from flask_login import login_user, logout_user, current_user, login_required
-from models import db, User, Task, login_manager
-from forms import RegisterForm, LoginForm, TaskForm, UpdateEmailForm, UpdatePasswordForm
+from .models import db, User, Task, login_manager
+from .forms import RegisterForm, LoginForm, TaskForm, UpdateEmailForm, UpdatePasswordForm
 import os
 from dotenv import load_dotenv
 
